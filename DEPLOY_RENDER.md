@@ -91,19 +91,25 @@ If you prefer configuring services manually via the Render UI:
 
 ## Verification & Health Check
 
-Once the deployment finishes and shows **Live**:
+### 🌟 Active Production Deployment
+- **Main Portal**: 👉 **[https://sewasetu-assistant-e4zl.onrender.com/](https://sewasetu-assistant-e4zl.onrender.com/)**
+- **Evaluation Dashboard**: [https://sewasetu-assistant-e4zl.onrender.com/eval-dashboard](https://sewasetu-assistant-e4zl.onrender.com/eval-dashboard)
+- **Officer Login (`admin` / `admin123`)**: [https://sewasetu-assistant-e4zl.onrender.com/admin](https://sewasetu-assistant-e4zl.onrender.com/admin)
+- **PurvSMS Live Console**: [https://sewasetu-assistant-e4zl.onrender.com/sms-console](https://sewasetu-assistant-e4zl.onrender.com/sms-console)
+- **Citizen MCP Explorer**: [https://sewasetu-assistant-e4zl.onrender.com/mcp/citizen](https://sewasetu-assistant-e4zl.onrender.com/mcp/citizen)
+- **Officer MCP Explorer**: [https://sewasetu-assistant-e4zl.onrender.com/mcp/officer](https://sewasetu-assistant-e4zl.onrender.com/mcp/officer)
 
 ### 1. Public Portal
-Visit your Render URL:
+Visit:
 ```
-https://<your-service>.onrender.com/
+https://sewasetu-assistant-e4zl.onrender.com/
 ```
 Verify the homepage loads with live statistics (Total Applications: ~100k+, Approved, Pending, Deemed Approved), the 5-second eligibility checker, and the interactive AI assistant widget.
 
 ### 2. Officer Login
 Visit:
 ```
-https://<your-service>.onrender.com/admin
+https://sewasetu-assistant-e4zl.onrender.com/admin
 ```
 - **Username**: `admin`
 - **Password**: `admin123`
@@ -112,7 +118,7 @@ Verify you are redirected to `/admin/dashboard` showing pending workload and que
 ### 3. Evaluation Dashboard
 Visit:
 ```
-https://<your-service>.onrender.com/eval-dashboard
+https://sewasetu-assistant-e4zl.onrender.com/eval-dashboard
 ```
 Verify:
 - 6 personas evaluated across 16 database assertions.
@@ -124,12 +130,12 @@ Verify:
 Verify streamable HTTP MCP discovery:
 ```bash
 # Citizen MCP Server discovery
-curl -X POST https://<your-service>.onrender.com/mcp/citizen \
+curl -X POST https://sewasetu-assistant-e4zl.onrender.com/mcp/citizen \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}}'
 
 # Officer MCP Server discovery
-curl -X POST https://<your-service>.onrender.com/mcp/officer \
+curl -X POST https://sewasetu-assistant-e4zl.onrender.com/mcp/officer \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}}'
 ```
@@ -137,6 +143,7 @@ curl -X POST https://<your-service>.onrender.com/mcp/officer \
 ### 5. PurvSMS Live Console
 Visit:
 ```
-https://<your-service>.onrender.com/sms-console
+https://sewasetu-assistant-e4zl.onrender.com/sms-console
 ```
 Inspect real-time telecom SMS dispatches and OTP codes.
+

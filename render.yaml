@@ -23,7 +23,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: PUBLIC_BASE_URL
-        value: https://sewasetu-assistant.onrender.com
+        value: https://sewasetu-assistant-e4zl.onrender.com
 
 databases:
   - name: sewasetu-db

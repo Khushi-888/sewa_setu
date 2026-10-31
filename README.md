@@ -14,19 +14,19 @@
 ## 🌐 Live Online Deployment Links
 
 ### 🚀 Primary Render Cloud Deployment
-**Main Live Portal:** 👉 **[https://sewasetu-assistant.onrender.com/](https://sewasetu-assistant.onrender.com/)**  
-*(Render Blueprint ID: `exs-dbj0qevb9u1s73cntd1g`)*
+**Main Live Portal:** 👉 **[https://sewasetu-assistant-e4zl.onrender.com/](https://sewasetu-assistant-e4zl.onrender.com/)**  
+*(Active Verified Cloud Deployment on Render)*
 
 | Resource | Public OnRender URL | Description |
 |:---|:---|:---|
-| **Main Public Portal** | [**https://sewasetu-assistant.onrender.com/**](https://sewasetu-assistant.onrender.com/) | Live public portal on Render |
-| **Interactive Eval Dashboard** | [**https://sewasetu-assistant.onrender.com/eval-dashboard**](https://sewasetu-assistant.onrender.com/eval-dashboard) | 6 personas, live transcripts, and DB assertions |
-| **Department Officer Portal** | [**https://sewasetu-assistant.onrender.com/admin**](https://sewasetu-assistant.onrender.com/admin) | Officer queue dashboard (`admin` / `admin123`) |
-| **Carrier SMS / OTP Gateway** | [**https://sewasetu-assistant.onrender.com/__gateway/api/messages**](https://sewasetu-assistant.onrender.com/__gateway/api/messages) | Live telecom carrier OTP & message stream |
-| **Citizen MCP Endpoint** | `https://sewasetu-assistant.onrender.com/mcp/citizen` | Streamable HTTP / SSE citizen interface |
-| **Officer MCP Endpoint** | `https://sewasetu-assistant.onrender.com/mcp/officer` | Streamable HTTP / SSE officer interface |
+| **Main Public Portal** | [**https://sewasetu-assistant-e4zl.onrender.com/**](https://sewasetu-assistant-e4zl.onrender.com/) | Live modern public portal on Render |
+| **Interactive Eval Dashboard** | [**https://sewasetu-assistant-e4zl.onrender.com/eval-dashboard**](https://sewasetu-assistant-e4zl.onrender.com/eval-dashboard) | 6 personas, live transcripts, and DB assertions |
+| **Department Officer Portal** | [**https://sewasetu-assistant-e4zl.onrender.com/admin**](https://sewasetu-assistant-e4zl.onrender.com/admin) | Officer queue dashboard (`admin` / `admin123`) |
+| **PurvSMS Telecom Hub Console** | [**https://sewasetu-assistant-e4zl.onrender.com/sms-console**](https://sewasetu-assistant-e4zl.onrender.com/sms-console) | Real-time SMS dispatch feed & live OTP viewer |
+| **Citizen MCP Explorer & SSE** | [**https://sewasetu-assistant-e4zl.onrender.com/mcp/citizen**](https://sewasetu-assistant-e4zl.onrender.com/mcp/citizen) | Interactive browser explorer & streamable JSON-RPC |
+| **Officer MCP Explorer & SSE** | [**https://sewasetu-assistant-e4zl.onrender.com/mcp/officer**](https://sewasetu-assistant-e4zl.onrender.com/mcp/officer) | Interactive browser explorer & streamable JSON-RPC |
 | **Deploy to Render Blueprint** | [**Deploy to Render**](https://render.com/deploy?repo=https://github.com/Khushi-888/sewa_setu) | 1-click automated blueprint setup (ID: `exs-dbj0qevb9u1s73cntd1g`) |
-| **Live Tunnel / Mirror** | [**https://faster-dreadful-conductor.ngrok-free.dev/**](https://faster-dreadful-conductor.ngrok-free.dev/) | High-speed active mirror & local public tunnel |
+| **High-Speed Active Mirror** | [**https://faster-dreadful-conductor.ngrok-free.dev/**](https://faster-dreadful-conductor.ngrok-free.dev/) | High-speed active mirror & local public tunnel |
 
 ---
 
