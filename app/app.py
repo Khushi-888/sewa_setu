@@ -46,18 +46,18 @@ ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
 # WITHDRAWN and REJECTED applications do not block a fresh application.
 ACTIVE_STATUSES = ("PENDING", "APPROVED", "DEEMED_APPROVED")
 
-SMS_GATEWAY_URL = config.get("app", "sms_gateway_url")
-OTP_VALIDITY_SECONDS = config.getint("app", "otp_validity_seconds")
-UPLOAD_DIR = config.get("app", "upload_dir")
-SCHEME_DEADLINE = datetime.strptime(config.get("pension", "scheme_deadline"),
-                                    "%Y-%m-%d %H:%M")
-MIN_AGE = config.getint("pension", "min_age")
-SLA_DAYS = config.getint("pension", "sla_days")
+SMS_GATEWAY_URL = os.environ.get("SMS_GATEWAY_URL", config.get("app", "sms_gateway_url"))
+OTP_VALIDITY_SECONDS = int(os.environ.get("OTP_VALIDITY_SECONDS", config.getint("app", "otp_validity_seconds")))
+UPLOAD_DIR = os.environ.get("UPLOAD_DIR", config.get("app", "upload_dir"))
+_deadline_val = os.environ.get("SCHEME_DEADLINE") or config.get("pension", "scheme_deadline")
+SCHEME_DEADLINE = datetime.strptime(_deadline_val, "%Y-%m-%d %H:%M")
+MIN_AGE = int(os.environ.get("MIN_AGE", config.getint("pension", "min_age")))
+SLA_DAYS = int(os.environ.get("SLA_DAYS", config.getint("pension", "sla_days")))
 
 BLOCKS = ["Sonari", "Rajapara", "Dhemaji Pathar", "Borgaon", "Namti", "Khelua"]
 
 import logging
-_logdir = "/var/log/sewasetu"
+_logdir = os.environ.get("LOG_DIR", "/var/log/sewasetu")
 try:
     os.makedirs(_logdir, exist_ok=True)
     _fh = logging.FileHandler(os.path.join(_logdir, "sewasetu-app.log"))
@@ -70,11 +70,11 @@ except Exception:
 
 def get_db():
     return psycopg2.connect(
-        host=config.get("database", "host"),
-        port=config.get("database", "port"),
-        dbname=config.get("database", "name"),
-        user=config.get("database", "user"),
-        password=config.get("database", "password"),
+        host=os.environ.get("DB_HOST", config.get("database", "host")),
+        port=int(os.environ.get("DB_PORT", config.get("database", "port"))),
+        dbname=os.environ.get("DB_NAME", config.get("database", "name")),
+        user=os.environ.get("DB_USER", config.get("database", "user")),
+        password=os.environ.get("DB_PASSWORD", config.get("database", "password")),
     )
 
 
