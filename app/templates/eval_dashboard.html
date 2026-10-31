@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evaluation Dashboard — Sewa Setu Agentic System</title>
+<style>
+  :root {
+    --primary: #0b3d6e;
+    --primary-light: #155b9e;
+    --saffron: #f7931e;
+    --success: #1b7e3c;
+    --success-bg: #e8f5e9;
+    --danger: #c62828;
+    --danger-bg: #ffebee;
+    --warning: #b36b00;
+    --warning-bg: #fff8e1;
+    --border: #d7dbe0;
+    --bg-light: #f4f6f9;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    background: #edf1f5;
+    color: #212529;
+    line-height: 1.5;
+  }
+  .header {
+    background: var(--primary);
+    color: #fff;
+    padding: 16px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .header h1 { margin: 0; font-size: 22px; font-weight: 700; }
+  .header .sub { font-size: 13px; color: #cfe0f3; margin-top: 2px; }
+  .band { background: var(--saffron); height: 5px; }
+  
+  .nav-bar {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    padding: 10px 32px;
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+  }
+  .nav-bar a { color: var(--primary); text-decoration: none; font-weight: 600; }
+  .nav-bar a:hover { text-decoration: underline; }
+
+  .main { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
+
+  .banner-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 6px solid var(--primary);
+    padding: 20px 24px;
+    border-radius: 4px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .banner-card h2 { margin: 0 0 8px; font-size: 20px; color: var(--primary); }
+  .banner-card p { margin: 0; font-size: 14px; color: #495057; }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .metric-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .metric-label { font-size: 12px; text-transform: uppercase; color: #6c757d; font-weight: 700; letter-spacing: 0.5px; }
+  .metric-val { font-size: 28px; font-weight: 800; color: var(--primary); margin: 6px 0 2px; }
+  .metric-sub { font-size: 12px; color: #28a745; font-weight: 600; }
+
+  .actions-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 14px 20px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 24px;
+  }
+  .btn-run {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-run:hover { background: var(--primary-light); }
+  .btn-run:disabled { background: #94a3b8; cursor: not-allowed; }
+
+  .persona-section { margin-bottom: 32px; }
+  .section-title { font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 16px; }
+
+  .persona-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .persona-header {
+    padding: 16px 20px;
+    background: #fafbfc;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+  .persona-info { display: flex; align-items: center; gap: 14px; }
+  .persona-badge {
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 12px;
+    text-transform: uppercase;
+  }
+  .badge-citizen { background: #e0f2fe; color: #0369a1; }
+  .badge-officer { background: #fef3c7; color: #b45309; }
+  .badge-passed { background: var(--success-bg); color: var(--success); }
+  .badge-failed { background: var(--danger-bg); color: var(--danger); }
+
+  .persona-name { font-size: 16px; font-weight: 700; color: #1e293b; }
+  .persona-meta { font-size: 13px; color: #64748b; }
+
+  .persona-body { padding: 20px; }
+  .story-box { background: #f8fafc; border-left: 3px solid #94a3b8; padding: 10px 14px; font-size: 13px; margin-bottom: 16px; color: #334155; }
+
+  .transcript-container { margin-top: 14px; }
+  .bubble {
+    margin-bottom: 12px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    max-width: 85%;
+  }
+  .bubble-user {
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    color: #1e1b4b;
+    margin-right: auto;
+  }
+  .bubble-assistant {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #064e3b;
+    margin-left: auto;
+  }
+  .tool-badge {
+    display: inline-block;
+    background: #334155;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+  .tool-code {
+    background: #1e293b;
+    color: #f8fafc;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: Consolas, monospace;
+    font-size: 11.5px;
+    overflow-x: auto;
+    margin: 6px 0;
+  }
+
+  .assertion-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 14px;
+    font-size: 13px;
+  }
+  .assertion-table th {
+    background: #f1f5f9;
+    text-align: left;
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    font-weight: 600;
+  }
+  .assertion-table td {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .findings-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px;
+    margin-top: 32px;
+  }
+  .findings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 14px;
+  }
+  .finding-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-top: 3px solid var(--primary);
+    padding: 14px;
+    border-radius: 4px;
+  }
+  .finding-title { font-weight: 700; font-size: 14px; color: var(--primary); margin-bottom: 6px; }
+  .finding-desc { font-size: 12.5px; color: #475569; }
+
+  .footer {
+    text-align: center;
+    padding: 24px 0 40px;
+    font-size: 12px;
+    color: #64748b;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Sewa Setu — Agentic Evaluation & Testing Dashboard</h1>
+    <div class="sub">Department of Social Welfare &middot; Government of Purvanchal &middot; Build for Bharat AI Track</div>
+  </div>
+  <div>
+    <span class="persona-badge badge-passed" style="font-size: 13px; padding: 6px 14px;">● LIVE STREAMABLE HTTP MCP</span>
+  </div>
+</div>
+<div class="band"></div>
+
+<div class="nav-bar">
+  <a href="/">← Return to Citizen Portal</a>
+  <a href="/admin">Departmental Officer Portal</a>
+  <a href="/status">Status Portal</a>
+  <a href="/.well-known/oauth-authorization-server">OAuth 2.1 Metadata</a>
+  <a href="/.well-known/jwks.json">JWKS Keys</a>
+  <a href="/__gateway/">Telecom SMS Console</a>
+</div>
+
+<div class="main">
+  <!-- Overview Banner -->
+  <div class="banner-card">
+    <h2>Real-World Agentic Evaluation & System-of-Record Verification</h2>
+    <p>
+      In accordance with the Director's briefing, we test our dual Model Context Protocol (MCP) servers (Citizen & Officer)
+      using concrete citizen personas. Each test simulates a real client conversation, invokes the streamable HTTP tools,
+      and verifies post-conversation truth directly inside the production PostgreSQL database.
+    </p>
+  </div>
+
+  <!-- Metric Badges -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-label">Evaluation Pass Rate</div>
+      <div class="metric-val" id="metric-pass-rate">{{ summary.pass_rate_pct }}%</div>
+      <div class="metric-sub" id="metric-pass-count">{{ summary.passed }}/{{ summary.total_personas }} Personas Passed</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Database Assertions Verified</div>
+      <div class="metric-val" id="metric-assert-rate">{{ summary.assertions_pass_rate_pct }}%</div>
+      <div class="metric-sub">{{ summary.assertions_passed }}/{{ summary.total_assertions }} Assertions Validated</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Statutory SLA Compliance</div>
+      <div class="metric-val">15 Days</div>
+      <div class="metric-sub">RTPS Auto Deemed-Approval Active</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">OAuth 2.1 Security Boundary</div>
+      <div class="metric-val">Enforced</div>
+      <div class="metric-sub">Role Isolation: Citizen ≠ Officer</div>
+    </div>
+  </div>
+
+  <!-- Action Bar -->
+  <div class="actions-bar">
+    <div>
+      <strong>Live Test Harness:</strong> 
+      <span id="last-run-text" style="color: #64748b; font-size: 13px;">Last evaluated at {{ timestamp or "System Initialized" }}</span>
+    </div>
+    <button class="btn-run" id="run-btn" onclick="triggerRunEvals()">
+      <span id="btn-text">▶ Run Live Evaluation Suite</span>
+    </button>
+  </div>
+
+  <!-- Personas Section -->
+  <div class="persona-section">
+    <div class="section-title">Evaluated Personas & Live Transcripts (PostgreSQL Verified)</div>
+
+    {% for res in results %}
+    <div class="persona-card">
+      <div class="persona-header" onclick="toggleDetails('{{ res.persona_id }}')">
+        <div class="persona-info">
+          <span class="persona-badge {% if res.role == 'officer' %}badge-officer{% else %}badge-citizen{% endif %}">
+            {{ res.role }}
+          </span>
+          <div>
+            <div class="persona-name">{{ res.persona_name }}</div>
+            <div class="persona-meta">{{ res.story }}</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span class="persona-badge {% if res.passed %}badge-passed{% else %}badge-failed{% endif %}">
+            {% if res.passed %}PASSED (100% DB ASSERTIONS){% else %}FAILED{% endif %}
+          </span>
+          <span style="font-size: 12px; color: #94a3b8;">▼</span>
+        </div>
+      </div>
+
+      <div class="persona-body" id="details-{{ res.persona_id }}">
+        <div class="story-box">
+          <strong>Context & Dialect:</strong> {{ res.story }}
+        </div>
+
+        <!-- Transcript -->
+        <h4 style="margin: 14px 0 8px; font-size: 14px; color: var(--primary);">Multi-Turn Conversational Transcript:</h4>
+        <div class="transcript-container">
+          {% for turn in res.transcript %}
+            {% if turn.sender in ('citizen', 'officer') %}
+              <div class="bubble bubble-user">
+                <strong>{{ turn.sender|capitalize }}:</strong> {{ turn.text }}
+              </div>
+            {% else %}
+              <div class="bubble bubble-assistant">
+                {% if turn.thought %}
+                  <div style="font-style: italic; color: #475569; font-size: 12px; margin-bottom: 4px;">
+                    💭 Reasoning: {{ turn.thought }}
+                  </div>
+                {% endif %}
+                {% if turn.tool_call %}
+                  <div>
+                    <span class="tool-badge">MCP tool: {{ turn.tool_call }}</span>
+                    {% if turn.tool_output %}
+                      <div class="tool-code">{{ turn.tool_output[:250] }}{% if turn.tool_output|length > 250 %}...{% endif %}</div>
+                    {% endif %}
+                  </div>
+                {% endif %}
+                {% if turn.text %}
+                  <div style="margin-top: 6px;">
+                    <strong>Assistant:</strong> {{ turn.text }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <!-- Database Assertions Table -->
+        <h4 style="margin: 20px 0 8px; font-size: 14px; color: var(--primary);">Post-Conversation Database Assertions:</h4>
+        <table class="assertion-table">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Assertion Type</th>
+              <th>Verification Description</th>
+              <th>Expected Value</th>
+              <th>Actual Value in Database</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in res.assertions %}
+            <tr>
+              <td>
+                <span class="persona-badge {% if a.passed %}badge-passed{% else %}badge-failed{% endif %}">
+                  {% if a.passed %}VERIFIED ✓{% else %}MISMATCH ✗{% endif %}
+                </span>
+              </td>
+              <td><code>{{ a.assertion_type }}</code></td>
+              <td>{{ a.description }}</td>
+              <td><code>{{ a.expected }}</code></td>
+              <td><strong>{{ a.actual }}</strong></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Key Findings & Architectural Learnings -->
+  <div class="findings-card">
+    <h3 style="margin: 0; font-size: 18px; color: var(--primary);">What Our Evaluations Found & What We Changed</h3>
+    <p style="font-size: 13px; color: #64748b; margin: 4px 0 16px;">
+      Direct findings from running multi-turn personas against real MCP endpoints and our concrete architectural adaptations:
+    </p>
+
+    <div class="findings-grid">
+      <div class="finding-box">
+        <div class="finding-title">1. Shared Phones & Family Conflicts</div>
+        <div class="finding-desc">
+          <strong>Finding:</strong> In Sonari, elderly citizens often use grandsons' or CSC operators' phones. If an active application already exists on that number, blind submission failed with database conflict errors.<br>
+          <strong>Fix:</strong> Implemented proactive active application detection in <code>check_application_status</code> and safe withdrawal via <code>withdraw_application</code>.
+        </div>
+      </div>
+      <div class="finding-box">
+        <div class="finding-title">2. Underage Tea-Stall Inquiries</div>
+        <div class="finding-desc">
+          <strong>Finding:</strong> Citizens like Haren Bora (57 yrs) frequently inquired based on informal rumors that pension begins at 55.<br>
+          <strong>Fix:</strong> Created standalone <code>check_eligibility</code> tool that calculates exact age against Indian Standard Time and explains statutory 60-year criteria respectfully without polluting the database.
+        </div>
+      </div>
+      <div class="finding-box">
+        <div class="finding-title">3. Small-Screen Bank Typo Recovery</div>
+        <div class="finding-desc">
+          <strong>Finding:</strong> Small screens and keypad issues caused common IFSC / bank account length errors.<br>
+          <strong>Fix:</strong> Added instant regex formatting validation with helpful feedback (e.g. <code>SBIN0003077</code> 11-character format) enabling agents to self-correct in a single turn.
+        </div>
+      </div>
+      <div class="finding-box">
+        <div class="finding-title">4. Officer Rationale & Statutory SLA</div>
+        <div class="finding-desc">
+          <strong>Finding:</strong> Discretionary rejections without recorded reasons left applicants confused, and backlog queues breached the 15-day RTPS statutory window.<br>
+          <strong>Fix:</strong> Enforced mandatory justification note in <code>decide_application</code>, sorted officer queues by oldest submission first, and exposed real-time SLA countdowns.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Sewa Setu Old Age Pension Portal &middot; Department of Social Welfare, Government of Purvanchal &middot; Built with MCP 2.x, FastAPI, and Flask
+</div>
+
+<script>
+function toggleDetails(id) {
+  const el = document.getElementById('details-' + id);
+  if (el.style.display === 'none') {
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+async function triggerRunEvals() {
+  const btn = document.getElementById('run-btn');
+  const btnText = document.getElementById('btn-text');
+  btn.disabled = true;
+  btnText.innerText = "Running Test Harness against MCP...";
+
+  try {
+    const resp = await fetch('/api/eval/run', { method: 'POST' });
+    const data = await resp.json();
+    if (data.success) {
+      window.location.reload();
+    } else {
+      alert("Evaluation run failed: " + (data.error || "Unknown error"));
+      btn.disabled = false;
+      btnText.innerText = "▶ Run Live Evaluation Suite";
+    }
+  } catch (err) {
+    alert("Network error: " + err);
+    btn.disabled = false;
+    btnText.innerText = "▶ Run Live Evaluation Suite";
+  }
+}
+</script>
+</body>
+</html>
