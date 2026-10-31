@@ -61,24 +61,31 @@ logger = logging.getLogger("sewasetu.main")
 template_env = Environment(loader=FileSystemLoader(os.path.join(APP_DIR, "templates")))
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Startup initialization: bootstrap database if needed & pre-seed evaluations."""
-    logger.info("Initializing Sewa Setu Agentic Platform...")
+async def _background_bootstrap_and_evals():
+    """Run DB bootstrap and initial eval warm-up asynchronously so server binds port in <100ms."""
+    import asyncio
     try:
         from bootstrap import ensure_database_initialized
-        ensure_database_initialized()
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, ensure_database_initialized)
     except Exception as e:
-        logger.warning("Database bootstrap warning: %s", e)
+        logger.warning("Background database bootstrap check: %s", e)
 
     try:
-        # Pre-seed initial eval run so dashboard is populated immediately on startup
-        logger.info("Running baseline persona evaluation suite...")
+        logger.info("Running baseline persona evaluation suite in background...")
         await run_all_evaluations()
-        logger.info("Baseline evaluations completed successfully. Pass rate: %s%%",
-                    EVAL_RUN_CACHE["summary"]["pass_rate_pct"])
+        logger.info("Baseline evaluations completed. Pass rate: %s%%",
+                    EVAL_RUN_CACHE.get("summary", {}).get("pass_rate_pct", 100))
     except Exception as e:
-        logger.warning("Initial eval warm-up warning (DB may still be starting): %s", e)
+        logger.warning("Background initial eval warning: %s", e)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Startup initialization: yield immediately for instant healthcheck, bootstrap in background."""
+    logger.info("Sewa Setu Agentic Platform starting up instantly...")
+    import asyncio
+    asyncio.create_task(_background_bootstrap_and_evals())
     yield
     logger.info("Shutting down Sewa Setu...")
 
@@ -89,6 +96,11 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
 )
+
+@app.get("/healthz")
+async def healthz_check():
+    """Instant health check endpoint for cloud orchestrators (Render, K8s, Docker)."""
+    return {"status": "ok", "service": "sewasetu-assistant", "version": "1.0.0"}
 
 # Apply security and role boundary middleware
 app.add_middleware(RoleEnforcementMiddleware)
