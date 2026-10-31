@@ -1,12 +1,39 @@
 {% extends "base.html" %}
+{% block title %}Track Application Status — Sewa Setu | Government of Purvanchal{% endblock %}
+
 {% block content %}
-<h2>Application Status Portal</h2>
-<form method="post">
-  <label>Mobile Number</label>
-  <input type="text" name="mobile" maxlength="10">
-  <label>Password</label>
-  <input type="password" name="password">
-  <p><button class="btn" type="submit">Login</button></p>
-</form>
-<p class="note"><a href="/status/reset">Forgot password?</a></p>
+<div class="gov-card" style="max-width: 580px; margin: 20px auto;">
+  <div style="border-bottom: 2px solid var(--gov-navy); padding-bottom: 12px; margin-bottom: 20px;">
+    <h2 style="margin: 0; color: var(--gov-navy); font-size: 22px;">Citizen Status Portal Login</h2>
+    <div style="font-size: 13px; color: var(--gov-muted); margin-top: 4px;">
+      Check live review progress, RTPS statutory SLA countdown, and download acknowledgment receipts.
+    </div>
+  </div>
+
+  <form method="post">
+    <div>
+      <label for="mobile">Registered Mobile Number <span style="color:#dc2626;">*</span></label>
+      <input type="text" id="mobile" name="mobile" maxlength="10" placeholder="10-digit mobile number" required autofocus>
+    </div>
+
+    <div style="margin-top: 14px;">
+      <label for="password">Password (Date of Birth as DDMMYYYY) <span style="color:#dc2626;">*</span></label>
+      <input type="password" id="password" name="password" placeholder="e.g. 14031955" required>
+      <div class="hint-text">
+        Per Department circular, your initial password is your Date of Birth in 8-digit <code>DDMMYYYY</code> format (e.g. 14/03/1955 &rarr; <code>14031955</code>).
+      </div>
+    </div>
+
+    <div style="margin-top: 24px; display: flex; align-items: center; justify-content: space-between;">
+      <button class="gov-btn gov-btn-saffron" type="submit" style="padding: 11px 28px;">
+        Login &amp; View Status &rarr;
+      </button>
+      <a href="/status/reset" style="font-size: 13px; color: var(--gov-navy); font-weight: 600;">Forgot Password?</a>
+    </div>
+  </form>
+
+  <div style="margin-top: 28px; padding: 14px; background: #f8fafc; border: 1px solid var(--gov-border); border-radius: 6px; font-size: 12.5px; color: #475569;">
+    <strong>Shared Phone or Kiosk Notice:</strong> If you applied using a grandson's or relative's phone, use that same mobile number with your own birthdate to log in. You may also query your status using our floating <strong>Citizen AI Assistant</strong> at any time.
+  </div>
+</div>
 {% endblock %}

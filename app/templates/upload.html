@@ -1,12 +1,46 @@
 {% extends "base.html" %}
+{% block title %}Upload Age Proof — Step 5: Document Upload | Sewa Setu{% endblock %}
+
 {% block content %}
-<div class="steps"><b>Step 5 of 6:</b> Document Upload</div>
-<h2>Upload Age Proof Document</h2>
-<p class="note">Accepted documents: Birth certificate, School leaving certificate,
-Voter ID. Accepted formats: <b>JPG or PDF, maximum size 5 MB</b>.</p>
-<form method="post" enctype="multipart/form-data">
-  <label>Select Document</label>
-  <input type="file" name="document">
-  <p><button class="btn" type="submit">Upload &amp; Continue</button></p>
-</form>
+<div class="gov-card" style="max-width: 680px; margin: 20px auto;">
+  <div style="font-size: 13px; color: var(--gov-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">
+    Step 5 of 5 &middot; Document Upload
+  </div>
+  <div style="height: 6px; background: #e2e8f0; border-radius: 3px; margin-bottom: 24px; position: relative;">
+    <div style="width: 95%; height: 100%; background: var(--gov-saffron); border-radius: 3px;"></div>
+  </div>
+
+  <h2 style="margin: 0 0 8px; color: var(--gov-navy); font-size: 22px;">Upload Age Proof Document</h2>
+  <p style="font-size: 13.5px; color: #475569; margin: 0 0 20px;">
+    Upload a clear photo or scanned copy of your official age proof document for block officer verification.
+  </p>
+
+  <div style="background: #f8fafc; border: 1px solid var(--gov-border); border-radius: 6px; padding: 14px 18px; margin-bottom: 20px; font-size: 13px;">
+    <strong>Accepted Documents:</strong>
+    <ul style="margin: 6px 0 0; padding-left: 18px; color: #475569;">
+      <li>Aadhaar Card (UIDAI) showing Date or Year of Birth</li>
+      <li>Voter Electoral Photo ID (EPIC)</li>
+      <li>School Leaving Certificate or Birth Certificate</li>
+      <li>Official Village Gaonburah Certificate</li>
+    </ul>
+    <div style="margin-top: 8px; color: #64748b; font-size: 12px;">Supported formats: <strong>PDF, JPG, JPEG, PNG</strong> (Max size: 5 MB)</div>
+  </div>
+
+  <form method="post" enctype="multipart/form-data">
+    <div style="border: 2px dashed #cbd5e1; border-radius: 8px; padding: 28px; text-align: center; background: #fafbfc; margin-bottom: 20px;">
+      <div style="font-size: 32px; margin-bottom: 8px;">📁</div>
+      <label for="document" style="cursor: pointer; display: inline-block; margin-bottom: 8px;">
+        <span style="color: var(--gov-navy); font-weight: 700; text-decoration: underline;">Choose a file from your device</span>
+      </label>
+      <input type="file" id="document" name="document" accept=".pdf,.jpg,.jpeg,.png" style="max-width: 320px; margin: 0 auto; display: block;" required>
+    </div>
+
+    <div style="display: flex; gap: 12px;">
+      <button class="gov-btn gov-btn-saffron" type="submit" style="padding: 11px 28px;">
+        Upload &amp; Preview Application &rarr;
+      </button>
+      <a href="/form/3" class="gov-btn gov-btn-outline">&larr; Back</a>
+    </div>
+  </form>
+</div>
 {% endblock %}

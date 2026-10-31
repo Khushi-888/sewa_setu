@@ -1,11 +1,37 @@
 {% extends "base.html" %}
+{% block title %}Verify OTP — Step 1: Mobile Verification | Sewa Setu{% endblock %}
+
 {% block content %}
-<div class="steps"><b>Step 1 of 6:</b> Mobile Verification</div>
-<h2>Enter OTP</h2>
-<p class="note">An OTP has been sent to {{ mobile }}.</p>
-<form method="post">
-  <label>OTP</label>
-  <input type="text" name="otp" maxlength="6" style="max-width:160px">
-  <p><button class="btn" type="submit">Verify</button></p>
-</form>
+<div class="gov-card" style="max-width: 580px; margin: 20px auto;">
+  <div style="font-size: 13px; color: var(--gov-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">
+    Step 1 of 5 &middot; OTP Verification
+  </div>
+  <div style="height: 6px; background: #e2e8f0; border-radius: 3px; margin-bottom: 24px; position: relative;">
+    <div style="width: 25%; height: 100%; background: var(--gov-saffron); border-radius: 3px;"></div>
+  </div>
+
+  <h2 style="margin: 0 0 8px; color: var(--gov-navy); font-size: 22px;">Enter 6-Digit OTP</h2>
+  <p style="font-size: 13.5px; color: #475569; margin: 0 0 20px;">
+    A 6-digit One Time Password (OTP) has been dispatched via SMS to <strong>+91 {{ mobile }}</strong>.
+  </p>
+
+  <form method="post">
+    <div>
+      <label for="otp">One Time Password (OTP) <span style="color:#dc2626;">*</span></label>
+      <input type="text" id="otp" name="otp" maxlength="6" style="max-width: 220px; font-size: 20px; letter-spacing: 4px; text-align: center;" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;" required autofocus>
+      <div class="hint-text">Valid for 5 minutes. Enter the exact 6-digit number received.</div>
+    </div>
+
+    <div style="margin-top: 24px; display: flex; gap: 12px; align-items: center;">
+      <button class="gov-btn gov-btn-saffron" type="submit" style="padding: 11px 28px;">
+        Verify &amp; Continue &rarr;
+      </button>
+      <a href="/apply" class="gov-btn gov-btn-outline">Resend OTP</a>
+    </div>
+  </form>
+
+  <div style="margin-top: 24px; padding: 12px 14px; background: #f8fafc; border: 1px solid var(--gov-border); border-radius: 6px; font-size: 12.5px; color: #64748b;">
+    <strong>Testing / Evaluation Notice:</strong> In this deployment, telecom messages are simulated in real time. You can view the live carrier inbox at <a href="/__gateway/" target="_blank" style="color:var(--gov-navy); font-weight:600;">SMS Gateway Console</a>.
+  </div>
+</div>
 {% endblock %}

@@ -198,16 +198,33 @@ python tests/test_server_endpoints.py
 
 ---
 
-## 7. Public Deployment & Assessment Checklist
+---
 
-- [x] **Public Portal URL:** `http://localhost:8000` (or configured `PUBLIC_BASE_URL` on server/tunnel)
-- [x] **Citizen MCP Endpoint:** `http://localhost:8000/mcp/citizen/sse` and `http://localhost:8000/mcp/citizen`
-- [x] **Officer MCP Endpoint:** `http://localhost:8000/mcp/officer/sse` and `http://localhost:8000/mcp/officer`
-- [x] **Evaluation Dashboard:** `http://localhost:8000/eval-dashboard`
-- [x] **Officer Credentials for Reviewers:** Username: `admin`, Password: `ADMIN_PASSWORD` (defaults to `admin123`)
+## 7. Render Cloud Deployment
+
+The repository includes native infrastructure-as-code configuration for deploying on [Render](https://render.com):
+- **`render.yaml` Blueprint**: Configures a Web Service and a Managed PostgreSQL database in one click.
+- **Automatic Database Bootstrap**: On fresh deployments, `app/bootstrap.py` automatically initializes `app/schema.sql` and loads the ~100k application seed dataset.
+- **Built-in Telecom Hub**: Operates an in-process simulated SMS gateway and live inspection console at `/sms-console`.
+- **Step-by-Step Instructions**: Refer to [`DEPLOY_RENDER.md`](./DEPLOY_RENDER.md) for full deployment walkthrough.
+
+---
+
+## 8. Public Deployment & Assessment Checklist
+
+- [x] **Public Live Portal URL:** `https://faster-dreadful-conductor.ngrok-free.dev/` (and local `http://localhost:8000/`)
+- [x] **Citizen MCP Streamable Endpoint:** `https://faster-dreadful-conductor.ngrok-free.dev/mcp/citizen` (SSE: `/mcp/citizen/sse`)
+- [x] **Officer MCP Streamable Endpoint:** `https://faster-dreadful-conductor.ngrok-free.dev/mcp/officer` (SSE: `/mcp/officer/sse`)
+- [x] **Interactive Evaluation Dashboard:** `https://faster-dreadful-conductor.ngrok-free.dev/eval-dashboard`
+- [x] **Officer Login Credentials:**
+  - URL: `https://faster-dreadful-conductor.ngrok-free.dev/admin` (or `/admin/login`)
+  - Username: `admin`
+  - Password: `admin123`
+- [x] **Simulated Telecom SMS Console:** `https://faster-dreadful-conductor.ngrok-free.dev/sms-console`
+- [x] **Render Deployment Blueprint:** [`render.yaml`](./render.yaml) and [`DEPLOY_RENDER.md`](./DEPLOY_RENDER.md)
 - [x] **One-Page Design Note:** [`DESIGN_NOTE.md`](./DESIGN_NOTE.md)
 - [x] **Loom Walkthrough Script:** [`LOOM_SCRIPT.md`](./LOOM_SCRIPT.md)
-- [x] **Git Repository:** Private repository named `sewasetu-assistant` with full commit history, `harshnisar` invited, plus `sewasetu-assistant.zip` including `.git`.
+- [x] **Git Repository & History:** Complete Git commit history packaged in `sewasetu-assistant.zip` (including `.git`) and ready for GitHub.
 
 ---
 

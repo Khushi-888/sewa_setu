@@ -1,38 +1,95 @@
 {% extends "base.html" %}
+{% block title %}Preview &amp; Declaration — Step 6: Review | Sewa Setu{% endblock %}
+
 {% block content %}
-<div class="steps"><b>Step 6 of 6:</b> Preview &amp; Declaration</div>
-<h2>Please check your application before submitting</h2>
-<table class="tbl" style="max-width:640px">
-  <tr><th>Full Name</th><td>{{ data.get('applicant_name','') }}</td></tr>
-  <tr><th>Date of Birth</th><td>{{ data.get('dob','') }}</td></tr>
-  <tr><th>Gender</th><td>{{ data.get('gender','') }}</td></tr>
-  <tr><th>Marital Status</th><td>{{ data.get('marital_status','') }}</td></tr>
-  {% if data.get('marital_status') == 'Widowed' %}
-  <tr><th>Late Husband's Name</th><td>{{ data.get('husband_name','') or '-' }}</td></tr>
+<div class="gov-card" style="max-width: 720px; margin: 20px auto;">
+  <div style="font-size: 13px; color: var(--gov-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">
+    Final Step &middot; Application Preview &amp; Statutory Declaration
+  </div>
+  <div style="height: 6px; background: #e2e8f0; border-radius: 3px; margin-bottom: 24px; position: relative;">
+    <div style="width: 100%; height: 100%; background: var(--gov-green); border-radius: 3px;"></div>
+  </div>
+
+  <h2 style="margin: 0 0 8px; color: var(--gov-navy); font-size: 22px;">Review Before Final Submission</h2>
+  <p style="font-size: 13.5px; color: #475569; margin: 0 0 20px;">
+    Please verify all applicant details carefully. Once submitted, your application will be assigned an official Application Number.
+  </p>
+
+  <table class="tbl">
+    <tbody>
+      <tr>
+        <th style="width: 35%;">Full Name of Senior Citizen</th>
+        <td><strong>{{ data.get('applicant_name','') }}</strong></td>
+      </tr>
+      <tr>
+        <th>Date of Birth</th>
+        <td>{{ data.get('dob','') }}</td>
+      </tr>
+      <tr>
+        <th>Gender &amp; Marital Status</th>
+        <td>{{ data.get('gender','') }} &middot; {{ data.get('marital_status','') }}</td>
+      </tr>
+      {% if data.get('marital_status') == 'Widowed' %}
+      <tr>
+        <th>Late Husband's Name</th>
+        <td>{{ data.get('husband_name','') or '-' }}</td>
+      </tr>
+      {% endif %}
+      <tr>
+        <th>Permanent Residence</th>
+        <td>{{ data.get('village','') }}, <strong>{{ data.get('block','') }} Block</strong></td>
+      </tr>
+      <tr>
+        <th>Direct Benefit Transfer (DBT) Bank Account</th>
+        <td><code>{{ data.get('bank_account','') }}</code></td>
+      </tr>
+      <tr>
+        <th>Bank Branch IFSC Code</th>
+        <td><code>{{ data.get('ifsc','') }}</code></td>
+      </tr>
+      <tr>
+        <th>Uploaded Age Proof Document</th>
+        <td><span class="badge badge-approved">&#10003; {{ doc_name or 'Uploaded' }}</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin: 16px 0; font-size: 13px; color: #64748b;">
+    Need to modify something? 
+    <a href="/form/1" style="color:var(--gov-navy); font-weight:600; margin: 0 4px;">Edit Personal</a> &middot;
+    <a href="/form/2" style="color:var(--gov-navy); font-weight:600; margin: 0 4px;">Edit Address</a> &middot;
+    <a href="/form/3" style="color:var(--gov-navy); font-weight:600; margin: 0 4px;">Edit Bank</a> &middot;
+    <a href="/upload" style="color:var(--gov-navy); font-weight:600; margin: 0 4px;">Re-upload Document</a>
+  </div>
+
+  {% if errors %}
+  <div style="background: #fef2f2; border: 1px solid #fecaca; border-left: 5px solid #dc2626; padding: 16px; border-radius: 6px; margin: 20px 0;">
+    <strong style="color: #991b1b; font-size: 14px;">Please correct the following errors before submitting:</strong>
+    <ul style="margin: 8px 0 0; padding-left: 20px; color: #b91c1c; font-size: 13.5px;">
+      {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% else %}
+  <div style="background: #f8fafc; border: 1px solid var(--gov-border); border-radius: 8px; padding: 20px; margin: 24px 0;">
+    <h3 style="margin: 0 0 8px; font-size: 15px; color: var(--gov-navy);">Statutory Applicant Declaration</h3>
+    <p style="font-size: 13px; color: #334155; line-height: 1.6; margin: 0 0 16px;">
+      I hereby solemnly declare that the information furnished above is true, complete, and correct to the best of my knowledge and belief. 
+      I understand that furnishing false information or forged documents is an offence punishable under applicable state laws and will result in immediate disqualification and recovery of pension funds.
+    </p>
+
+    <form method="post">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;">
+        <input type="checkbox" id="agree" required style="width: 18px; height: 18px; cursor: pointer;">
+        <label for="agree" style="margin: 0; font-size: 13.5px; cursor: pointer; color: #1e293b;">
+          <strong>I agree to the statutory declaration above and submit my application.</strong>
+        </label>
+      </div>
+
+      <button class="gov-btn gov-btn-saffron" type="submit" style="font-size: 15.5px; padding: 12px 36px; width: 100%; justify-content: center;">
+        Submit Final Pension Application &rarr;
+      </button>
+    </form>
+  </div>
   {% endif %}
-  <tr><th>Village / Town</th><td>{{ data.get('village','') }}</td></tr>
-  <tr><th>Block</th><td>{{ data.get('block','') }}</td></tr>
-  <tr><th>Bank Account</th><td>{{ data.get('bank_account','') }}</td></tr>
-  <tr><th>IFSC</th><td>{{ data.get('ifsc','') }}</td></tr>
-  <tr><th>Age Proof Document</th><td>{{ doc_name or '-' }}</td></tr>
-</table>
-<p class="note">Need to change something?
-  <a href="/form/1">Personal details</a> &middot;
-  <a href="/form/2">Address</a> &middot;
-  <a href="/form/3">Bank details</a> &middot;
-  <a href="/upload">Document</a></p>
-{% if errors %}
-<div class="flash">This application cannot be submitted yet:
-  <ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
 </div>
-{% else %}
-<h3>Declaration</h3>
-<p>I hereby declare that the information furnished above is true to the best of my
-knowledge and belief. I understand that furnishing false information is punishable
-under applicable law and will result in cancellation of pension.</p>
-<form method="post">
-  <p><input type="checkbox" required> I agree to the above declaration.</p>
-  <p><button class="btn" type="submit">Submit Application</button></p>
-</form>
-{% endif %}
 {% endblock %}

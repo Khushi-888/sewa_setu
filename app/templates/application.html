@@ -1,31 +1,97 @@
 {% extends "base.html" %}
+{% block title %}Application Status — {{ a[0] }} | Sewa Setu{% endblock %}
+
 {% block content %}
-<h2>Application Status</h2>
-<table class="tbl" style="max-width:640px">
-  <tr><th>Application No</th><td>{{ a[0] }}</td></tr>
-  <tr><th>Applicant Name</th><td>{{ a[1] }}</td></tr>
-  <tr><th>Mobile</th><td>{{ a[2] }}</td></tr>
-  <tr><th>Date of Birth</th><td>{{ a[3] }}</td></tr>
-  <tr><th>Village</th><td>{{ a[4] }}</td></tr>
-  <tr><th>Block</th><td>{{ a[5] }}</td></tr>
-  <tr><th>Bank Account</th><td>{{ a[6] }}</td></tr>
-  <tr><th>IFSC</th><td>{{ a[7] }}</td></tr>
-  <tr><th>Status</th><td><b>{{ a[8] }}</b></td></tr>
-  <tr><th>Submitted</th><td>{{ a[9] }}</td></tr>
-  <tr><th>Decided</th><td>{{ a[10] or '-' }}</td></tr>
-</table>
-<p><a href="/ack/{{ app_id }}.pdf">Download Acknowledgment (PDF)</a> &middot;
-<a href="/status/connections">Connected applications</a></p>
-{% if a[8] == 'PENDING' %}
-<h3>Made a mistake?</h3>
-<p class="note">A pending application can be withdrawn. After withdrawing, you may
-submit a fresh application with the same mobile number.</p>
-<form method="post" action="/application/{{ app_id }}/withdraw"
-      onsubmit="return confirm('Withdraw application {{ a[0] }}? This cannot be undone.');">
-  <button class="btn" style="background:#a33" type="submit">Withdraw this application</button>
-</form>
-{% elif a[8] in ('WITHDRAWN', 'REJECTED') %}
-<p class="note">This application is {{ a[8].lower() }}. You may
-<a href="/apply">submit a new application</a>.</p>
-{% endif %}
+<div class="gov-card" style="max-width: 720px; margin: 20px auto;">
+  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gov-navy); padding-bottom: 12px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+    <div>
+      <div style="font-size: 12px; text-transform: uppercase; color: var(--gov-muted); font-weight: 700;">Application Dossier</div>
+      <h2 style="margin: 0; color: var(--gov-navy); font-size: 22px;">{{ a[1] }} &middot; <code>{{ a[0] }}</code></h2>
+    </div>
+    <div>
+      <span class="badge {% if a[8] == 'PENDING' %}badge-pending{% elif a[8] in ('APPROVED', 'DEEMED_APPROVED') %}badge-approved{% elif a[8] == 'REJECTED' %}badge-rejected{% else %}badge-withdrawn{% endif %}" style="font-size: 13px; padding: 6px 14px;">
+        {{ a[8] }}
+      </span>
+    </div>
+  </div>
+
+  <table class="tbl">
+    <tbody>
+      <tr>
+        <th style="width: 35%;">Application Number</th>
+        <td><strong style="font-family: monospace; font-size: 16px;">{{ a[0] }}</strong></td>
+      </tr>
+      <tr>
+        <th>Applicant Name</th>
+        <td>{{ a[1] }}</td>
+      </tr>
+      <tr>
+        <th>Registered Mobile</th>
+        <td>+91 {{ a[2] }}</td>
+      </tr>
+      <tr>
+        <th>Date of Birth</th>
+        <td>{{ a[3] }}</td>
+      </tr>
+      <tr>
+        <th>Village &amp; Administrative Block</th>
+        <td>{{ a[4] }}, <strong>{{ a[5] }} Block</strong></td>
+      </tr>
+      <tr>
+        <th>Disbursement Bank Account</th>
+        <td><code>{{ a[6] }}</code> (IFSC: <code>{{ a[7] }}</code>)</td>
+      </tr>
+      <tr>
+        <th>Current Status</th>
+        <td>
+          <strong>{{ a[8] }}</strong>
+          {% if a[8] == 'PENDING' %}
+            <span style="font-size: 12px; color: #b45309; margin-left: 8px;">(Under review by {{ a[5] }} BDO under 15-day RTPS SLA)</span>
+          {% elif a[8] in ('APPROVED', 'DEEMED_APPROVED') %}
+            <span style="font-size: 12px; color: #15803d; margin-left: 8px;">(Approved for monthly ₹250 DBT)</span>
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th>Submission Timestamp</th>
+        <td>{{ a[9] }}</td>
+      </tr>
+      <tr>
+        <th>Decision Recorded</th>
+        <td>{{ a[10] or 'Awaiting Block Officer Decision' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin: 20px 0; display: flex; gap: 12px; flex-wrap: wrap;">
+    <a href="/ack/{{ app_id }}.pdf" class="gov-btn gov-btn-saffron" style="font-size: 13.5px; padding: 9px 20px;">
+      📄 Download Acknowledgment (PDF)
+    </a>
+    <a href="/status/connections" class="gov-btn gov-btn-outline" style="font-size: 13.5px; padding: 9px 20px;">
+      🔗 Connected Applications (OAuth)
+    </a>
+  </div>
+
+  {% if a[8] == 'PENDING' %}
+  <div style="margin-top: 28px; padding: 18px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px;">
+    <h3 style="margin: 0 0 6px; font-size: 15px; color: #92400e;">Need to Correct Information?</h3>
+    <p style="font-size: 13px; color: #78350f; line-height: 1.6; margin: 0 0 14px;">
+      Per state welfare regulations, each mobile number may only hold one active application. 
+      If you made an error in your bank account or name, you may withdraw this pending application and submit an updated one immediately.
+    </p>
+    <form method="post" action="/application/{{ app_id }}/withdraw"
+          onsubmit="return confirm('Are you sure you want to withdraw application {{ a[0] }}? This action cannot be undone.');">
+      <button class="gov-btn" style="background: #dc2626; font-size: 13px; padding: 8px 18px;" type="submit">
+        Withdraw This Application &rarr;
+      </button>
+    </form>
+  </div>
+  {% elif a[8] in ('WITHDRAWN', 'REJECTED') %}
+  <div style="margin-top: 24px; padding: 16px; background: #f8fafc; border: 1px solid var(--gov-border); border-radius: 6px;">
+    <p style="margin: 0; font-size: 13.5px; color: #475569;">
+      This application is marked <strong>{{ a[8] }}</strong>. You are eligible to <a href="/apply" style="color:var(--gov-navy); font-weight:700;">submit a new pension application</a>.
+    </p>
+  </div>
+  {% endif %}
+</div>
 {% endblock %}

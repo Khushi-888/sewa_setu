@@ -1,29 +1,64 @@
 {% extends "base.html" %}
+{% block title %}Personal Details — Step 2: Application Form | Sewa Setu{% endblock %}
+
 {% block content %}
-<div class="steps"><b>Step 2 of 6:</b> Personal Details</div>
-<h2>Personal Details</h2>
-<form method="post">
-  <label>Full Name of Applicant (as per age proof document)</label>
-  <input type="text" name="applicant_name" value="{{ data.get('applicant_name','') }}">
-  <label>Date of Birth (DD/MM/YYYY)</label>
-  <input type="text" name="dob" placeholder="DD/MM/YYYY" value="{{ data.get('dob','') }}">
-  <label>Gender</label>
-  <select name="gender">
-    <option value="">--Select--</option>
-    <option {% if data.get('gender')=='Male' %}selected{% endif %}>Male</option>
-    <option {% if data.get('gender')=='Female' %}selected{% endif %}>Female</option>
-    <option {% if data.get('gender')=='Other' %}selected{% endif %}>Other</option>
-  </select>
-  <label>Marital Status</label>
-  <select name="marital_status">
-    <option value="">--Select--</option>
-    <option {% if data.get('marital_status')=='Married' %}selected{% endif %}>Married</option>
-    <option {% if data.get('marital_status')=='Unmarried' %}selected{% endif %}>Unmarried</option>
-    <option {% if data.get('marital_status')=='Widowed' %}selected{% endif %}>Widowed</option>
-  </select>
-  <label>Late Husband's Name (only if widowed; optional)</label>
-  <input type="text" name="husband_name" value="{{ data.get('husband_name','') }}">
-  <p class="note">Name, date of birth, village, block and bank account are mandatory.</p>
-  <p><button class="btn" type="submit">Save &amp; Continue</button></p>
-</form>
+<div class="gov-card" style="max-width: 680px; margin: 20px auto;">
+  <div style="font-size: 13px; color: var(--gov-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">
+    Step 2 of 5 &middot; Applicant Personal Details
+  </div>
+  <div style="height: 6px; background: #e2e8f0; border-radius: 3px; margin-bottom: 24px; position: relative;">
+    <div style="width: 40%; height: 100%; background: var(--gov-saffron); border-radius: 3px;"></div>
+  </div>
+
+  <h2 style="margin: 0 0 8px; color: var(--gov-navy); font-size: 22px;">Personal Details</h2>
+  <p style="font-size: 13.5px; color: #475569; margin: 0 0 20px;">
+    Please enter applicant details exactly as they appear on your official government age proof document.
+  </p>
+
+  <form method="post">
+    <div>
+      <label for="applicant_name">Full Name of Senior Citizen <span style="color:#dc2626;">*</span></label>
+      <input type="text" id="applicant_name" name="applicant_name" value="{{ data.get('applicant_name','') }}" placeholder="e.g. Tileswari Gogoi" required autofocus>
+      <div class="hint-text">Assamese / Bengali native script and Roman script both accepted.</div>
+    </div>
+
+    <div style="margin-top: 14px;">
+      <label for="dob">Date of Birth (DD/MM/YYYY) <span style="color:#dc2626;">*</span></label>
+      <input type="text" id="dob" name="dob" placeholder="DD/MM/YYYY (e.g. 14/03/1955)" value="{{ data.get('dob','') }}" required>
+      <div class="hint-text">Applicant must be 60 years of age or older as of today.</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px;">
+      <div>
+        <label for="gender">Gender <span style="color:#dc2626;">*</span></label>
+        <select id="gender" name="gender" required>
+          <option value="">-- Select Gender --</option>
+          <option value="Female" {% if data.get('gender')=='Female' %}selected{% endif %}>Female</option>
+          <option value="Male" {% if data.get('gender')=='Male' %}selected{% endif %}>Male</option>
+          <option value="Other" {% if data.get('gender')=='Other' %}selected{% endif %}>Other</option>
+        </select>
+      </div>
+      <div>
+        <label for="marital_status">Marital Status <span style="color:#dc2626;">*</span></label>
+        <select id="marital_status" name="marital_status" required>
+          <option value="">-- Select Status --</option>
+          <option value="Widowed" {% if data.get('marital_status')=='Widowed' %}selected{% endif %}>Widowed</option>
+          <option value="Married" {% if data.get('marital_status')=='Married' %}selected{% endif %}>Married</option>
+          <option value="Unmarried" {% if data.get('marital_status')=='Unmarried' %}selected{% endif %}>Unmarried</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-top: 14px;">
+      <label for="husband_name">Late Husband's Name (if widowed; optional)</label>
+      <input type="text" id="husband_name" name="husband_name" value="{{ data.get('husband_name','') }}" placeholder="e.g. Late Bhaben Gogoi">
+    </div>
+
+    <div style="margin-top: 28px; display: flex; gap: 12px;">
+      <button class="gov-btn gov-btn-saffron" type="submit" style="padding: 11px 28px;">
+        Save &amp; Continue to Address &rarr;
+      </button>
+    </div>
+  </form>
+</div>
 {% endblock %}

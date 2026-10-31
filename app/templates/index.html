@@ -1,25 +1,383 @@
 {% extends "base.html" %}
+{% block title %}Sewa Setu — Old Age Pension Portal | Government of Purvanchal{% endblock %}
+
 {% block content %}
-<h2>Welcome</h2>
-<p>The Old Age Pension Scheme provides a monthly pension of Rs. 250 to eligible
-senior citizens aged 60 years and above who are residents of Purvanchal.</p>
-{% if hours_left is not none %}
-<p><b>Application window closes in approximately {{ hours_left }} hours</b>
-(midnight, 31 October).</p>
-{% else %}
-<p><b>The application window for this scheme has closed.</b></p>
-{% endif %}
-<p>
-  <a href="/apply"><button class="btn">Apply for Pension</button></a>
-  &nbsp;
-  <a href="/status"><button class="btn" style="background:#555">Check Application Status</button></a>
-</p>
-<h3>How to apply</h3>
-<ol class="note">
-  <li>Verify your mobile number with OTP.</li>
-  <li>Fill the application form (personal details, address, bank details).</li>
-  <li>Upload your age proof document (JPG or PDF, maximum 5 MB).</li>
-  <li>Submit the declaration. Note down your Application Number.</li>
-</ol>
-<p class="note">For assistance visit your nearest Block Development Office.</p>
+<style>
+  .hero-banner {
+    background: linear-gradient(135deg, #0b3d6e 0%, #174e85 100%);
+    color: #fff;
+    border-radius: 10px;
+    padding: 36px 32px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(11, 61, 110, 0.15);
+  }
+  .hero-banner::after {
+    content: "₹250";
+    position: absolute;
+    right: 20px;
+    bottom: -20px;
+    font-size: 140px;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.05);
+    pointer-events: none;
+    line-height: 1;
+  }
+  .hero-tag {
+    background: var(--gov-saffron);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+  .hero-title {
+    margin: 0 0 10px;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .hero-subtitle {
+    font-size: 15px;
+    color: #e0f2fe;
+    max-width: 680px;
+    margin: 0 0 24px;
+    line-height: 1.5;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* Portal Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    background: #fff;
+    border: 1px solid var(--gov-border);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  .stat-num {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--gov-navy);
+    margin: 4px 0 2px;
+  }
+  .stat-desc {
+    font-size: 12.5px;
+    color: var(--gov-muted);
+    font-weight: 500;
+  }
+
+  /* Action Cards */
+  .action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+    margin-bottom: 32px;
+  }
+  .action-card {
+    background: #fff;
+    border: 1px solid var(--gov-border);
+    border-radius: 8px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.15s, box-shadow 0.15s;
+    text-decoration: none;
+    color: inherit;
+  }
+  .action-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    border-color: #cbd5e1;
+  }
+  .action-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+  .action-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gov-navy);
+    margin-bottom: 6px;
+  }
+  .action-text {
+    font-size: 13px;
+    color: #475569;
+    margin-bottom: 16px;
+    flex: 1;
+  }
+
+  /* Eligibility Checker Section */
+  .checker-box {
+    background: #fff;
+    border: 1px solid var(--gov-border);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 32px;
+  }
+  .checker-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) 120px;
+    gap: 14px;
+    align-items: flex-end;
+    margin-top: 14px;
+  }
+  .verdict-box {
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    display: none;
+    font-size: 13.5px;
+    font-weight: 500;
+  }
+
+  /* Guided Steps */
+  .steps-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .step-box {
+    background: #f8fafc;
+    border: 1px solid var(--gov-border);
+    border-radius: 6px;
+    padding: 16px;
+    position: relative;
+  }
+  .step-num {
+    background: var(--gov-navy);
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .step-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; color: var(--gov-navy); }
+  .step-desc { font-size: 12.5px; color: #475569; }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-banner">
+  <span class="hero-tag">A Lifeline for Senior Citizens</span>
+  <h2 class="hero-title">Purvanchal Old Age Pension Scheme</h2>
+  <p class="hero-subtitle">
+    Providing dignified financial assistance of <strong>₹250 per month</strong> via Direct Benefit Transfer (DBT) 
+    to all eligible residents aged 60 and above. Backed by a statutory 15-day statutory SLA guarantee under the RTPS Act.
+  </p>
+
+  <div class="hero-actions">
+    <a href="/apply" class="gov-btn gov-btn-saffron" style="font-size: 15px; padding: 12px 26px;">
+      📝 Apply for Pension (New Registration)
+    </a>
+    <a href="/status" class="gov-btn gov-btn-outline" style="color: #fff; border-color: #fff;">
+      🔍 Track Existing Application
+    </a>
+    <a href="/eval-dashboard" class="gov-btn" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);">
+      📊 Agentic Eval Dashboard
+    </a>
+  </div>
+</div>
+
+<!-- Vital Scheme Counters -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-desc">Beneficiary Allowance</div>
+    <div class="stat-num">₹250 / mo</div>
+    <div class="stat-desc">Direct Bank Transfer</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-desc">Applications Processed</div>
+    <div class="stat-num">100,000+</div>
+    <div class="stat-desc">System of Record (PostgreSQL)</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-desc">Statutory Review SLA</div>
+    <div class="stat-num">15 Days</div>
+    <div class="stat-desc">Right to Public Services Act</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-desc">Covered Blocks</div>
+    <div class="stat-num">6 Blocks</div>
+    <div class="stat-desc">Sonari, Rajapara, Khelua &amp; more</div>
+  </div>
+</div>
+
+<!-- Primary Action Cards -->
+<div class="action-grid">
+  <a href="/apply" class="action-card">
+    <div>
+      <div class="action-icon">📝</div>
+      <div class="action-title">Apply for Pension</div>
+      <div class="action-text">
+        Easy 4-step registration: verify your mobile number with OTP, enter personal and bank details, upload age proof, and get an instant application receipt.
+      </div>
+    </div>
+    <span style="font-weight: 700; color: var(--gov-navy); font-size: 13.5px;">Start Application &rarr;</span>
+  </a>
+
+  <a href="/status" class="action-card">
+    <div>
+      <div class="action-icon">🔍</div>
+      <div class="action-title">Check Application Status</div>
+      <div class="action-text">
+        Track real-time progress of your application. Login securely with your 10-digit mobile number and Date of Birth password (DDMMYYYY).
+      </div>
+    </div>
+    <span style="font-weight: 700; color: var(--gov-navy); font-size: 13.5px;">View Status &rarr;</span>
+  </a>
+
+  <div class="action-card" onclick="toggleAIChat()" style="cursor: pointer;">
+    <div>
+      <div class="action-icon">🤖</div>
+      <div class="action-title">Citizen AI Assistant</div>
+      <div class="action-text">
+        Ask questions in plain English or rural dialect. Check eligibility, get document guidance, or inquire about your status powered by our live Citizen MCP server.
+      </div>
+    </div>
+    <span style="font-weight: 700; color: var(--gov-navy); font-size: 13.5px;">Launch Assistant &rarr;</span>
+  </div>
+
+  <a href="/eval-dashboard" class="action-card">
+    <div>
+      <div class="action-icon">📊</div>
+      <div class="action-title">Agentic Eval Dashboard</div>
+      <div class="action-text">
+        View live multi-turn persona evaluations across 6 rural citizens, inspect agent reasoning, and verify real-time PostgreSQL database assertions.
+      </div>
+    </div>
+    <span style="font-weight: 700; color: var(--gov-navy); font-size: 13.5px;">Inspect Evals &rarr;</span>
+  </a>
+</div>
+
+<!-- Interactive Instant Eligibility Checker -->
+<div class="checker-box">
+  <h3 style="margin: 0; font-size: 17px; color: var(--gov-navy);">Check Your Eligibility in 5 Seconds</h3>
+  <p style="font-size: 13px; color: #64748b; margin: 4px 0 0;">
+    Verify if you or your relative meets the statutory criteria before applying.
+  </p>
+
+  <div class="checker-form">
+    <div>
+      <label for="chk-dob" style="margin-top:0;">Date of Birth (DD/MM/YYYY):</label>
+      <input type="text" id="chk-dob" placeholder="e.g. 15/08/1955">
+    </div>
+    <div>
+      <label for="chk-block" style="margin-top:0;">Administrative Block:</label>
+      <select id="chk-block">
+        <option value="Sonari">Sonari</option>
+        <option value="Rajapara">Rajapara</option>
+        <option value="Dhemaji Pathar">Dhemaji Pathar</option>
+        <option value="Borgaon">Borgaon</option>
+        <option value="Namti">Namti</option>
+        <option value="Khelua">Khelua</option>
+      </select>
+    </div>
+    <div>
+      <button type="button" class="gov-btn" onclick="checkEligibilityQuick()" style="width: 100%;">Check Now</button>
+    </div>
+  </div>
+
+  <div id="quick-verdict" class="verdict-box"></div>
+</div>
+
+<!-- 4-Step Process Guide -->
+<div class="gov-card">
+  <h3 style="margin: 0 0 4px; font-size: 18px; color: var(--gov-navy);">Application Process at a Glance</h3>
+  <p style="font-size: 13px; color: #64748b; margin: 0 0 16px;">
+    Our portal is specifically designed for elderly citizens, shared family phones, and rural CSC kiosks.
+  </p>
+
+  <div class="steps-wrapper">
+    <div class="step-box">
+      <div class="step-num">1</div>
+      <div class="step-title">Mobile &amp; OTP</div>
+      <div class="step-desc">Enter your 10-digit mobile number and verify via a 6-digit SMS OTP. Grandson or family phones welcome.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">2</div>
+      <div class="step-title">Personal &amp; Bank</div>
+      <div class="step-desc">Provide applicant name, date of birth, village, active bank account (9–18 digits) and 11-digit IFSC code.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">3</div>
+      <div class="step-title">Age Proof Upload</div>
+      <div class="step-desc">Attach a clear photo or PDF copy of Aadhaar Card, Voter Photo ID, School Certificate, or Gaonburah Certificate.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">4</div>
+      <div class="step-title">Instant Acknowledgment</div>
+      <div class="step-desc">Receive your official Application Number. Under the RTPS Act, the BDO must review your case within 15 days.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function checkEligibilityQuick() {
+  const dob = document.getElementById('chk-dob').value.trim();
+  const block = document.getElementById('chk-block').value;
+  const vb = document.getElementById('quick-verdict');
+
+  if (!dob) {
+    vb.style.display = 'block';
+    vb.style.background = '#fee2e2';
+    vb.style.color = '#b91c1c';
+    vb.innerText = 'Please enter your Date of Birth in DD/MM/YYYY format.';
+    return;
+  }
+
+  try {
+    const payload = {
+      jsonrpc: "2.0",
+      method: "tools/call",
+      params: { name: "check_eligibility", arguments: { dob: dob, block: block } },
+      id: 1
+    };
+    const res = await fetch('/mcp/citizen', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    const result = JSON.parse(data.result.content[0].text);
+
+    vb.style.display = 'block';
+    if (result.eligible) {
+      vb.style.background = '#dcfce7';
+      vb.style.color = '#15803d';
+      vb.innerHTML = `<strong>Eligible!</strong> You are ${result.calculated_age} years old in ${result.block} block. You qualify for the ₹250/month pension! <a href="/apply" style="color:#15803d; font-weight:700; margin-left:8px;">Proceed to Apply &rarr;</a>`;
+    } else {
+      vb.style.background = '#fffbeb';
+      vb.style.color = '#b45309';
+      vb.innerHTML = `<strong>Not Currently Eligible:</strong> ${result.reasons.join(' ')}`;
+    }
+  } catch (err) {
+    vb.style.display = 'block';
+    vb.style.background = '#fee2e2';
+    vb.style.color = '#b91c1c';
+    vb.innerText = 'Unable to verify at this moment. Please verify date format (DD/MM/YYYY).';
+  }
+}
+</script>
 {% endblock %}

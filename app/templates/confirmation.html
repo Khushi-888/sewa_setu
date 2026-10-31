@@ -1,12 +1,39 @@
 {% extends "base.html" %}
+{% block title %}Application Submitted Successfully — Sewa Setu | Department of Social Welfare{% endblock %}
+
 {% block content %}
-<h2>Application Submitted</h2>
-<p>Your application has been received and is pending departmental verification.</p>
-<table class="tbl" style="max-width:480px">
-  <tr><th>Application Number</th><td><b>{{ app_no }}</b></td></tr>
-</table>
-<p class="note">Please note down your Application Number. You can check your
-application status on the <a href="/status">status portal</a> using your mobile
-number and password (your date of birth in DDMMYYYY format).</p>
-<p><a href="/ack/{{ app_id }}.pdf"><button class="btn">Download Acknowledgment (PDF)</button></a></p>
+<div class="gov-card" style="max-width: 680px; margin: 20px auto; text-align: center;">
+  <div style="width: 64px; height: 64px; background: #dcfce7; color: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 16px;">
+    ✓
+  </div>
+
+  <span class="badge badge-approved" style="font-size: 13px; padding: 6px 14px; margin-bottom: 8px;">
+    Application Successfully Registered
+  </span>
+
+  <h2 style="margin: 8px 0; color: var(--gov-navy); font-size: 24px;">Old Age Pension Application Received</h2>
+  <p style="font-size: 14px; color: #475569; margin: 0 0 24px;">
+    Your pension application has been submitted to the Department of Social Welfare, Government of Purvanchal.
+  </p>
+
+  <div style="background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 8px; padding: 20px; max-width: 440px; margin: 0 auto 24px;">
+    <div style="font-size: 12px; text-transform: uppercase; color: var(--gov-muted); font-weight: 700; letter-spacing: 0.5px;">Official Application Number</div>
+    <div style="font-size: 30px; font-weight: 800; color: var(--gov-navy); font-family: monospace; margin: 6px 0;">{{ app_no }}</div>
+    <div style="font-size: 12px; color: #64748b;">Please preserve this number for all future inquiries and counter verification.</div>
+  </div>
+
+  <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
+    <a href="/ack/{{ app_id }}.pdf" class="gov-btn gov-btn-saffron" style="font-size: 14.5px; padding: 11px 24px;">
+      📄 Download Official Acknowledgment (PDF)
+    </a>
+    <a href="/status" class="gov-btn gov-btn-outline" style="font-size: 14.5px; padding: 11px 24px;">
+      🔍 Track Status on Citizen Portal
+    </a>
+  </div>
+
+  <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 16px; font-size: 13px; color: #1e3a8a; text-align: left; line-height: 1.6;">
+    <strong style="display: block; margin-bottom: 4px; font-size: 13.5px;">Statutory 15-Day SLA Guarantee (Purvanchal RTPS Act):</strong>
+    Your application is now in the queue for the Block Development Officer. Under state law, the decision must be recorded within 15 calendar days. An automated SMS notification will be sent to your registered mobile upon approval.
+  </div>
+</div>
 {% endblock %}

@@ -40,13 +40,17 @@ app.secret_key = os.environ.get("SECRET_KEY") or config.get("app", "secret_key")
 app.config["PERMANENT_SESSION_LIFETIME"] = 7200
 
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
 
 # An applicant may hold at most one application in these states at a time.
 # WITHDRAWN and REJECTED applications do not block a fresh application.
 ACTIVE_STATUSES = ("PENDING", "APPROVED", "DEEMED_APPROVED")
 
-SMS_GATEWAY_URL = os.environ.get("SMS_GATEWAY_URL", config.get("app", "sms_gateway_url"))
+_is_docker = os.path.exists("/.dockerenv") or bool(os.environ.get("DOCKER_CONTAINER"))
+_default_smsgw = config.get("app", "sms_gateway_url")
+if not _is_docker and "smsgw" in _default_smsgw:
+    _default_smsgw = "http://localhost:8025"
+SMS_GATEWAY_URL = os.environ.get("SMS_GATEWAY_URL", _default_smsgw)
 OTP_VALIDITY_SECONDS = int(os.environ.get("OTP_VALIDITY_SECONDS", config.getint("app", "otp_validity_seconds")))
 UPLOAD_DIR = os.environ.get("UPLOAD_DIR", config.get("app", "upload_dir"))
 _deadline_val = os.environ.get("SCHEME_DEADLINE") or config.get("pension", "scheme_deadline")
@@ -69,6 +73,11 @@ except Exception:
 
 
 def get_db():
+    db_url = os.environ.get("DATABASE_URL")
+    if db_url:
+        if db_url.startswith("postgres://"):
+            db_url = "postgresql://" + db_url[len("postgres://"):]
+        return psycopg2.connect(db_url)
     return psycopg2.connect(
         host=os.environ.get("DB_HOST", config.get("database", "host")),
         port=int(os.environ.get("DB_PORT", config.get("database", "port"))),
@@ -93,9 +102,14 @@ def hash_password(p):
 def send_sms(mobile, text):
     try:
         requests.post(SMS_GATEWAY_URL + "/api/send",
-                      json={"to": mobile, "text": text}, timeout=5)
+                      json={"to": mobile, "text": text}, timeout=3)
     except Exception as e:
-        app.logger.error("sms gateway error: %s" % e)
+        app.logger.warning("External sms gateway unreachable: %s; recording internally", e)
+    try:
+        from sms_hub import record_sms
+        record_sms(mobile, text)
+    except Exception:
+        pass
 
 
 def deadline_remaining():
@@ -563,6 +577,7 @@ def reset_password():
 # ---------------------------------------------------------------------------
 
 @app.route("/admin", methods=["GET", "POST"])
+@app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
     if request.method == "POST":
         if (ADMIN_PASSWORD and request.form.get("username") == ADMIN_USERNAME and

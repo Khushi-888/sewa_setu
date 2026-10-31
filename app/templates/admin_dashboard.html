@@ -1,26 +1,149 @@
 {% extends "base.html" %}
+{% block title %}Block Officer Dashboard — Sewa Setu | Department of Social Welfare{% endblock %}
+
 {% block content %}
-<h2>Dashboard</h2>
-<p><a href="/admin/applications?status=PENDING">Pending</a> |
-<a href="/admin/applications?status=APPROVED">Approved</a> |
-<a href="/admin/applications?status=REJECTED">Rejected</a> |
-<a href="/admin/applications?status=DEEMED_APPROVED">Deemed Approved</a> |
-<a href="/admin/applications?status=WITHDRAWN">Withdrawn</a> |
-<a href="/admin/tokens">Program tokens</a></p>
+<style>
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--gov-navy);
+    padding-bottom: 14px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .filter-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .pill {
+    padding: 8px 16px;
+    background: #fff;
+    border: 1px solid var(--gov-border);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--gov-text);
+    transition: all 0.15s;
+  }
+  .pill:hover, .pill.active {
+    background: var(--gov-navy);
+    color: #fff;
+    border-color: var(--gov-navy);
+  }
+  .pill.danger {
+    color: var(--gov-danger);
+    border-color: #fecaca;
+  }
+  .pill.danger:hover {
+    background: var(--gov-danger);
+    color: #fff;
+  }
+  .grid-2col {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 24px;
+  }
+</style>
 
-<h3>Applications by Status</h3>
-<table class="tbl" style="max-width:400px">
-{% for s, c in by_status %}
-<tr><td>{{ s }}</td><td style="text-align:right">{{ c }}</td></tr>
-{% endfor %}
-</table>
+<div class="admin-header">
+  <div>
+    <h2 style="margin: 0; color: var(--gov-navy); font-size: 24px;">Block Development Officer Dashboard</h2>
+    <div style="font-size: 13px; color: var(--gov-muted); margin-top: 4px;">
+      Jurisdiction Review &middot; Purvanchal Right to Public Services (RTPS) Statutory Monitoring
+    </div>
+  </div>
+  <div style="display: flex; gap: 10px;">
+    <a href="/admin/tokens" class="gov-btn gov-btn-outline" style="font-size: 13px; padding: 8px 16px;">🔑 Program Tokens</a>
+    <a href="/eval-dashboard" class="gov-btn" style="font-size: 13px; padding: 8px 16px;">📊 Eval Dashboard</a>
+  </div>
+</div>
 
-<h3 style="color:#a33">Pending beyond {{ sla }}-day SLA: {{ overdue }}</h3>
+<!-- Filter Tabs -->
+<div class="filter-pills">
+  <a href="/admin/applications?status=PENDING" class="pill active">Pending Applications</a>
+  <a href="/admin/applications?status=APPROVED" class="pill">Approved</a>
+  <a href="/admin/applications?status=DEEMED_APPROVED" class="pill">Deemed Approved (RTPS)</a>
+  <a href="/admin/applications?status=REJECTED" class="pill">Rejected</a>
+  <a href="/admin/applications?status=WITHDRAWN" class="pill">Withdrawn</a>
+</div>
 
-<h3>Pending by Block</h3>
-<table class="tbl" style="max-width:400px">
-{% for b, c in by_block %}
-<tr><td>{{ b }}</td><td style="text-align:right">{{ c }}</td></tr>
-{% endfor %}
-</table>
+<!-- Alert Banner if Overdue Applications Exist -->
+{% if overdue > 0 %}
+<div style="background: #fff1f2; border: 1px solid #fecdd3; border-left: 5px solid #e11d48; padding: 14px 18px; border-radius: 6px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+  <div>
+    <strong style="color: #9f1239; font-size: 14.5px;">Statutory SLA Alert: {{ overdue }} application(s) pending beyond {{ sla }} days!</strong>
+    <div style="font-size: 12.5px; color: #be123c; margin-top: 2px;">
+      Under the Purvanchal RTPS Act, these applications are due for automatic deemed approval by the nightly scheduler.
+    </div>
+  </div>
+  <a href="/admin/applications?status=PENDING" class="gov-btn" style="background: #e11d48; font-size: 13px; padding: 8px 16px;">Review Overdue &rarr;</a>
+</div>
+{% endif %}
+
+<div class="grid-2col">
+  <!-- Status Distribution Table -->
+  <div class="gov-card">
+    <h3 style="margin: 0 0 14px; font-size: 16px; color: var(--gov-navy);">Applications by Current Status</h3>
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>Application State</th>
+          <th style="text-align: right;">Total Records</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s, c in by_status %}
+        <tr>
+          <td>
+            <span class="badge {% if s == 'PENDING' %}badge-pending{% elif s in ('APPROVED', 'DEEMED_APPROVED') %}badge-approved{% elif s == 'REJECTED' %}badge-rejected{% else %}badge-withdrawn{% endif %}">
+              {{ s }}
+            </span>
+          </td>
+          <td style="text-align: right; font-weight: 700; font-family: monospace; font-size: 14px;">{{ c }}</td>
+          <td>
+            <a href="/admin/applications?status={{ s }}" style="color: var(--gov-navy); font-weight: 600; font-size: 12.5px;">View &rarr;</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pending Applications by Block -->
+  <div class="gov-card">
+    <h3 style="margin: 0 0 14px; font-size: 16px; color: var(--gov-navy);">Pending Applications by Block</h3>
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>Administrative Block</th>
+          <th style="text-align: right;">Pending Count</th>
+          <th>Workload Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b, c in by_block %}
+        <tr>
+          <td><strong>{{ b }}</strong></td>
+          <td style="text-align: right; font-weight: 700; font-family: monospace; font-size: 14px;">{{ c }}</td>
+          <td>
+            {% if c > 150 %}
+              <span style="color: #dc2626; font-size: 12px; font-weight: 700;">High Volume</span>
+            {% elif c > 80 %}
+              <span style="color: #d97706; font-size: 12px; font-weight: 700;">Moderate</span>
+            {% else %}
+              <span style="color: #16a34a; font-size: 12px; font-weight: 700;">Normal</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endblock %}

@@ -1,43 +1,99 @@
 {% extends "base.html" %}
+{% block title %}Case Dossier — {{ a[0] }} | Department of Social Welfare{% endblock %}
+
 {% block content %}
-<h2>Application {{ a[0] }}</h2>
-<p><a href="/admin/applications">&laquo; Back to list</a></p>
-<table class="tbl" style="max-width:640px">
-  <tr><th>Applicant Name</th><td>{{ a[1] }}</td></tr>
-  <tr><th>Mobile</th><td>{{ a[2] }}</td></tr>
-  <tr><th>Date of Birth</th><td>{{ a[3] }}</td></tr>
-  <tr><th>Gender</th><td>{{ a[4] }}</td></tr>
-  <tr><th>Marital Status</th><td>{{ a[5] }}</td></tr>
-  <tr><th>Village</th><td>{{ a[6] }}</td></tr>
-  <tr><th>Block</th><td>{{ a[7] }}</td></tr>
-  <tr><th>Bank Account</th><td>{{ a[8] }}</td></tr>
-  <tr><th>IFSC</th><td>{{ a[9] }}</td></tr>
-  <tr><th>Document</th><td>{{ a[10] or '-' }}</td></tr>
-  <tr><th>Status</th><td><b>{{ a[11] }}</b></td></tr>
-  <tr><th>Submitted</th><td>{{ a[12] }}</td></tr>
-  <tr><th>Decided</th><td>{{ a[13] or '-' }} {% if a[14] %}by {{ a[14] }}{% endif %}</td></tr>
-</table>
-{% if a[11] == 'PENDING' %}
-<h3>Decision</h3>
-<form method="post" action="/admin/approve/{{ app_id }}" style="display:inline">
-  <input type="text" name="note" placeholder="Note (optional)" style="max-width:300px">
-  <button class="btn" type="submit">Approve</button>
-</form>
-&nbsp;
-<form method="post" action="/admin/reject/{{ app_id }}" style="display:inline">
-  <input type="text" name="note" placeholder="Reason for rejection" style="max-width:300px">
-  <button class="btn" style="background:#a33" type="submit">Reject</button>
-</form>
-{% endif %}
-<h3>Audit trail</h3>
-{% if audit %}
-<table class="tbl" style="max-width:640px">
-<tr><th>When</th><th>Action</th><th>By</th><th>Note</th></tr>
-{% for at, action, actor, note in audit %}
-<tr><td>{{ at }}</td><td>{{ action }}</td><td>{{ actor }}</td><td>{{ note or '' }}</td></tr>
-{% endfor %}
-</table>
-{% else %}
-<p class="note">No audit entries (application predates audit logging).</p>
-{% endif %}
+<div class="gov-card">
+  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gov-navy); padding-bottom: 12px; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+    <div>
+      <a href="/admin/applications" style="font-size: 13px; color: var(--gov-navy); font-weight: 600; text-decoration: none;">&larr; Back to Applications Queue</a>
+      <h2 style="margin: 4px 0 0; color: var(--gov-navy); font-size: 22px;">Case Review Dossier: {{ a[1] }} (<code>{{ a[0] }}</code>)</h2>
+    </div>
+    <div>
+      <span class="badge {% if a[11] == 'PENDING' %}badge-pending{% elif a[11] in ('APPROVED', 'DEEMED_APPROVED') %}badge-approved{% elif a[11] == 'REJECTED' %}badge-rejected{% else %}badge-withdrawn{% endif %}" style="font-size: 13px; padding: 6px 14px;">
+        {{ a[11] }}
+      </span>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 24px;">
+    <div>
+      <h3 style="margin: 0 0 10px; font-size: 15px; color: var(--gov-navy);">Applicant Identity &amp; Residence</h3>
+      <table class="tbl">
+        <tr><th style="width: 40%;">Full Name</th><td><strong>{{ a[1] }}</strong></td></tr>
+        <tr><th>Mobile Number</th><td>+91 {{ a[2] }}</td></tr>
+        <tr><th>Date of Birth</th><td>{{ a[3] }}</td></tr>
+        <tr><th>Gender &amp; Marital</th><td>{{ a[4] }} &middot; {{ a[5] }}</td></tr>
+        <tr><th>Permanent Address</th><td>{{ a[6] }}, <strong>{{ a[7] }} Block</strong></td></tr>
+      </table>
+    </div>
+
+    <div>
+      <h3 style="margin: 0 0 10px; font-size: 15px; color: var(--gov-navy);">Bank &amp; Verification Documents</h3>
+      <table class="tbl">
+        <tr><th style="width: 40%;">Bank Account</th><td><code>{{ a[8] }}</code></td></tr>
+        <tr><th>IFSC Code</th><td><code>{{ a[9] }}</code></td></tr>
+        <tr><th>Age Proof Document</th><td>{{ a[10] or 'Verified Record' }}</td></tr>
+        <tr><th>Submitted At</th><td>{{ a[12] }}</td></tr>
+        <tr><th>Decided At / By</th><td>{{ a[13] or '-' }} {% if a[14] %}(by <code>{{ a[14] }}</code>){% endif %}</td></tr>
+      </table>
+    </div>
+  </div>
+
+  {% if a[11] == 'PENDING' %}
+  <!-- Official Administrative Decision Panel -->
+  <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 8px; padding: 22px; margin-bottom: 28px;">
+    <h3 style="margin: 0 0 6px; font-size: 16px; color: var(--gov-navy);">Record Administrative Decision</h3>
+    <p style="font-size: 13px; color: #64748b; margin: 0 0 16px;">
+      Under state audit compliance, recording a clear rationale note is required for all approve and reject actions. An SMS notification will be sent to the applicant.
+    </p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <!-- Approve Form -->
+      <form method="post" action="/admin/approve/{{ app_id }}" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 16px;">
+        <h4 style="margin: 0 0 8px; color: #15803d; font-size: 14px;">Approve Application</h4>
+        <input type="text" name="note" placeholder="Verification note (e.g. Verified age proof matches DOB)" style="width: 100%; margin-bottom: 12px; font-size: 13px;" required>
+        <button class="gov-btn" style="background: #16a34a; width: 100%; justify-content: center;" type="submit">&#10003; Confirm Official Approval</button>
+      </form>
+
+      <!-- Reject Form -->
+      <form method="post" action="/admin/reject/{{ app_id }}" style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 16px;">
+        <h4 style="margin: 0 0 8px; color: #b91c1c; font-size: 14px;">Reject Application</h4>
+        <input type="text" name="note" placeholder="Reason for rejection (e.g. Document illegible / underage)" style="width: 100%; margin-bottom: 12px; font-size: 13px;" required>
+        <button class="gov-btn" style="background: #dc2626; width: 100%; justify-content: center;" type="submit">&#10007; Confirm Rejection</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Immutable Audit Trail -->
+  <h3 style="margin: 28px 0 10px; font-size: 16px; color: var(--gov-navy);">Immutable Audit Trail</h3>
+  {% if audit %}
+  <table class="tbl">
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>Action</th>
+        <th>Authorized Actor</th>
+        <th>Official Justification Note</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for at, action, actor, note in audit %}
+      <tr>
+        <td style="font-size: 12.5px; color: #64748b; white-space: nowrap;">{{ at }}</td>
+        <td>
+          <span class="badge {% if action == 'SUBMIT' %}badge-pending{% elif action in ('APPROVED', 'DEEMED_APPROVED') %}badge-approved{% elif action == 'REJECTED' %}badge-rejected{% else %}badge-withdrawn{% endif %}">
+            {{ action }}
+          </span>
+        </td>
+        <td><code>{{ actor }}</code></td>
+        <td>{{ note or '-' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p style="font-size: 13px; color: #64748b;">No audit records available for this application.</p>
+  {% endif %}
+</div>
 {% endblock %}

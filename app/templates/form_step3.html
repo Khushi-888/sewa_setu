@@ -1,14 +1,39 @@
 {% extends "base.html" %}
+{% block title %}Bank Details — Step 4: Application Form | Sewa Setu{% endblock %}
+
 {% block content %}
-<div class="steps"><b>Step 4 of 6:</b> Bank Details</div>
-<h2>Bank Details for Pension Disbursement</h2>
-<form method="post">
-  <label>Bank Account Number</label>
-  <input type="text" name="bank_account" value="{{ data.get('bank_account','') }}">
-  <label>IFSC Code</label>
-  <input type="text" name="ifsc" value="{{ data.get('ifsc','') }}">
-  <p class="note">Pension will be credited by DBT to this account. Ensure the account
-  is in the name of the applicant.</p>
-  <p><button class="btn" type="submit">Save &amp; Continue</button></p>
-</form>
+<div class="gov-card" style="max-width: 680px; margin: 20px auto;">
+  <div style="font-size: 13px; color: var(--gov-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">
+    Step 4 of 5 &middot; Direct Benefit Transfer (DBT) Bank Details
+  </div>
+  <div style="height: 6px; background: #e2e8f0; border-radius: 3px; margin-bottom: 24px; position: relative;">
+    <div style="width: 80%; height: 100%; background: var(--gov-saffron); border-radius: 3px;"></div>
+  </div>
+
+  <h2 style="margin: 0 0 8px; color: var(--gov-navy); font-size: 22px;">Bank Account for Monthly Pension</h2>
+  <p style="font-size: 13.5px; color: #475569; margin: 0 0 20px;">
+    Monthly pension assistance of ₹250 will be credited directly to this account. Ensure account is active and held in the applicant's name.
+  </p>
+
+  <form method="post">
+    <div>
+      <label for="bank_account">Savings Bank Account Number <span style="color:#dc2626;">*</span></label>
+      <input type="text" id="bank_account" name="bank_account" value="{{ data.get('bank_account','') }}" placeholder="9 to 18 digits (e.g. 38192847192)" required autofocus>
+      <div class="hint-text">Digits only. Hyphens and spaces will be automatically normalized.</div>
+    </div>
+
+    <div style="margin-top: 14px;">
+      <label for="ifsc">Bank Branch IFSC Code <span style="color:#dc2626;">*</span></label>
+      <input type="text" id="ifsc" name="ifsc" value="{{ data.get('ifsc','') }}" placeholder="11 characters (e.g. SBIN0003077)" maxlength="11" style="text-transform: uppercase;" required>
+      <div class="hint-text">Found on your bank passbook or cheque leaf. Format: 4 letters, 0, then 6 alphanumeric characters.</div>
+    </div>
+
+    <div style="margin-top: 28px; display: flex; gap: 12px;">
+      <button class="gov-btn gov-btn-saffron" type="submit" style="padding: 11px 28px;">
+        Save &amp; Continue to Document Upload &rarr;
+      </button>
+      <a href="/form/2" class="gov-btn gov-btn-outline">&larr; Back</a>
+    </div>
+  </form>
+</div>
 {% endblock %}

@@ -1,24 +1,64 @@
 {% extends "base.html" %}
+{% block title %}Applications Queue ({{ status }}) — Sewa Setu | Department of Social Welfare{% endblock %}
+
 {% block content %}
-<h2>Applications &mdash; {{ status }}</h2>
-<p><a href="/admin/dashboard">&laquo; Dashboard</a></p>
-<form method="get" style="margin-bottom:12px">
-  <input type="text" name="mobile" placeholder="Search by mobile number" value="{{ mobile or '' }}" style="max-width:240px">
-  <button class="btn" type="submit" style="padding:6px 14px">Search</button>
-</form>
-<table class="tbl">
-<tr><th>ID</th><th>Application No</th><th>Name</th><th>Mobile</th><th>Block</th>
-<th>Status</th><th>Submitted</th><th></th></tr>
-{% for r in rows %}
-<tr>
-  <td>{{ r[0] }}</td><td>{{ r[1] }}</td><td>{{ r[2] }}</td><td>{{ r[3] }}</td>
-  <td>{{ r[4] }}</td><td>{{ r[5] }}</td><td>{{ r[6] }}</td>
-  <td><a href="/admin/application/{{ r[0] }}">View</a></td>
-</tr>
-{% endfor %}
-</table>
-<p>
-{% if page > 1 %}<a href="?status={{ status }}&page={{ page - 1 }}">&laquo; Previous</a>{% endif %}
-&nbsp;<a href="?status={{ status }}&page={{ page + 1 }}">Next &raquo;</a>
-</p>
+<div class="gov-card">
+  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gov-navy); padding-bottom: 12px; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+    <div>
+      <a href="/admin/dashboard" style="font-size: 13px; color: var(--gov-navy); font-weight: 600; text-decoration: none;">&larr; Back to Officer Dashboard</a>
+      <h2 style="margin: 4px 0 0; color: var(--gov-navy); font-size: 22px;">Applications Queue &mdash; <span style="text-transform: uppercase;">{{ status }}</span></h2>
+    </div>
+    <form method="get" style="display: flex; gap: 8px; align-items: center;">
+      <input type="text" name="mobile" placeholder="Search by mobile number..." value="{{ mobile or '' }}" style="max-width: 220px; padding: 7px 12px; font-size: 13px;">
+      <button class="gov-btn" type="submit" style="padding: 7px 16px; font-size: 13px;">Search</button>
+    </form>
+  </div>
+
+  <table class="tbl">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Application No</th>
+        <th>Applicant Name</th>
+        <th>Mobile</th>
+        <th>Block</th>
+        <th>Status</th>
+        <th>Submission Date</th>
+        <th>Case Dossier</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td><code>{{ r[0] }}</code></td>
+        <td><strong style="font-family: monospace;">{{ r[1] }}</strong></td>
+        <td><strong>{{ r[2] }}</strong></td>
+        <td>{{ r[3] }}</td>
+        <td>{{ r[4] }}</td>
+        <td>
+          <span class="badge {% if r[5] == 'PENDING' %}badge-pending{% elif r[5] in ('APPROVED', 'DEEMED_APPROVED') %}badge-approved{% elif r[5] == 'REJECTED' %}badge-rejected{% else %}badge-withdrawn{% endif %}">
+            {{ r[5] }}
+          </span>
+        </td>
+        <td style="font-size: 12.5px; color: #64748b;">{{ r[6] }}</td>
+        <td>
+          <a href="/admin/application/{{ r[0] }}" class="gov-btn" style="padding: 4px 10px; font-size: 12px;">Review Dossier &rarr;</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      {% if page > 1 %}
+        <a href="?status={{ status }}&page={{ page - 1 }}" class="gov-btn gov-btn-outline" style="font-size: 12.5px; padding: 6px 14px;">&larr; Previous Page</a>
+      {% endif %}
+    </div>
+    <div style="font-size: 13px; color: var(--gov-muted);">Page {{ page }}</div>
+    <div>
+      <a href="?status={{ status }}&page={{ page + 1 }}" class="gov-btn gov-btn-outline" style="font-size: 12.5px; padding: 6px 14px;">Next Page &rarr;</a>
+    </div>
+  </div>
+</div>
 {% endblock %}

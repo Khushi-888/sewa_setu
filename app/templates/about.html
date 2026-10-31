@@ -1,16 +1,127 @@
 {% extends "base.html" %}
+{% block title %}About the Scheme — Sewa Setu | Department of Social Welfare{% endblock %}
+
 {% block content %}
-<h2>About the Scheme</h2>
-<p>The Old Age Pension Scheme is implemented by the Department of Social Welfare,
-Government of Purvanchal, under the State Social Assistance Programme.</p>
-<p>Eligibility: residents of Purvanchal aged 60 years and above. One application per
-eligible citizen. Applications are processed within 15 days as per the Purvanchal
-Right to Public Services Act; applications not processed within the statutory
-period stand approved (deemed approval).</p>
-<p>Pension amount: Rs. 250 per month, credited by DBT to the applicant's bank account.</p>
-<p>Required at application: a mobile number (for OTP), bank account and IFSC, and one
-age proof document (birth certificate, school leaving certificate or Voter ID; JPG,
-PNG or PDF up to 5 MB).</p>
-<p>One active application per applicant. A pending application can be withdrawn
-from the status portal and a fresh one submitted.</p>
+<div class="gov-card">
+  <div style="border-bottom: 2px solid var(--gov-saffron); padding-bottom: 12px; margin-bottom: 20px;">
+    <h2 style="margin: 0; color: var(--gov-navy); font-size: 24px;">About the Purvanchal Old Age Pension Scheme</h2>
+    <div style="color: var(--gov-muted); font-size: 13.5px; margin-top: 4px;">
+      State Social Assistance Programme &middot; Statutory Welfare Gazette Notification 2023/SW/402
+    </div>
+  </div>
+
+  <p style="font-size: 15px; line-height: 1.7; color: #334155;">
+    The <strong>Old Age Pension Scheme</strong> is a flagship social security initiative implemented by the 
+    Department of Social Welfare, Government of Purvanchal. For thousands of elderly citizens across our state, 
+    particularly widows, rural agricultural workers, and disadvantaged families, this scheme provides a critical lifeline 
+    ensuring basic nutritional and medical dignity in their senior years.
+  </p>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin: 28px 0;">
+    <div style="background: #f8fafc; border: 1px solid var(--gov-border); border-left: 4px solid var(--gov-navy); padding: 18px; border-radius: 6px;">
+      <h4 style="margin: 0 0 6px; color: var(--gov-navy); font-size: 16px;">Monthly Financial Assistance</h4>
+      <p style="margin: 0; font-size: 13.5px; color: #475569;">
+        <strong>₹250 per month</strong> credited directly into the senior citizen's active individual savings bank account through the Public Financial Management System (PFMS) / Direct Benefit Transfer (DBT).
+      </p>
+    </div>
+
+    <div style="background: #f8fafc; border: 1px solid var(--gov-border); border-left: 4px solid var(--gov-saffron); padding: 18px; border-radius: 6px;">
+      <h4 style="margin: 0 0 6px; color: #c2410c; font-size: 16px;">15-Day Statutory SLA Guarantee</h4>
+      <p style="margin: 0; font-size: 13.5px; color: #475569;">
+        Under the <strong>Purvanchal Right to Public Services (RTPS) Act</strong>, the Block Development Officer must review every case within 15 calendar days. Any application unreviewed after 15 days automatically stands <strong>DEEMED_APPROVED</strong> by state law.
+      </p>
+    </div>
+  </div>
+
+  <h3 style="color: var(--gov-navy); font-size: 18px; margin: 28px 0 12px;">1. Eligibility Criteria</h3>
+  <ul style="color: #334155; line-height: 1.8; font-size: 14px; padding-left: 20px;">
+    <li><strong>Age Threshold:</strong> The applicant must be <strong>60 years of age or older</strong> on the date of application submission. Age is calculated against Indian Standard Time (IST).</li>
+    <li><strong>Domicile:</strong> Must be a permanent resident of Purvanchal residing in one of the approved administrative blocks.</li>
+    <li><strong>Bank Account:</strong> Applicant must hold an individual savings bank account in any commercial or regional rural bank with an active 11-digit IFSC code.</li>
+    <li><strong>Income & Social Status:</strong> Designed for seniors without regular government or formal pension subsistence.</li>
+  </ul>
+
+  <h3 style="color: var(--gov-navy); font-size: 18px; margin: 28px 0 12px;">2. Approved Administrative Jurisdictions</h3>
+  <p style="font-size: 13.5px; color: #475569;">
+    The scheme is actively deployed and accepted across six designated administrative blocks:
+  </p>
+  <table class="tbl">
+    <thead>
+      <tr>
+        <th>Block Name</th>
+        <th>Subdivision</th>
+        <th>Covered Rural Gaon Panchayats</th>
+        <th>Designated Review Authority</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Sonari</strong></td>
+        <td>Charaideo Central</td>
+        <td>Lakhipur, Kathoni, Nalbari Gaon</td>
+        <td>Block Development Officer (BDO Sonari)</td>
+      </tr>
+      <tr>
+        <td><strong>Rajapara</strong></td>
+        <td>Purvanchal South</td>
+        <td>Teliagaon, Dighaljan, Rajapara Gaon</td>
+        <td>Block Development Officer (BDO Rajapara)</td>
+      </tr>
+      <tr>
+        <td><strong>Dhemaji Pathar</strong></td>
+        <td>North Bank</td>
+        <td>Kathoni, Nalbari Gaon, Borpathar</td>
+        <td>Block Development Officer (BDO Dhemaji Pathar)</td>
+      </tr>
+      <tr>
+        <td><strong>Borgaon</strong></td>
+        <td>Central Valley</td>
+        <td>Borgaon Centre, Udaypur, Milanpur</td>
+        <td>Block Development Officer (BDO Borgaon)</td>
+      </tr>
+      <tr>
+        <td><strong>Namti</strong></td>
+        <td>Sibsagar Border</td>
+        <td>Namti Chariali, Hatipara</td>
+        <td>Block Development Officer (BDO Namti)</td>
+      </tr>
+      <tr>
+        <td><strong>Khelua</strong></td>
+        <td>Eastern Circle</td>
+        <td>Chengelimara, Sialmari</td>
+        <td>Block Development Officer (BDO Khelua)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 style="color: var(--gov-navy); font-size: 18px; margin: 28px 0 12px;">3. Accepted Age Proof Documentation</h3>
+  <p style="font-size: 13.5px; color: #475569;">
+    Any one of the following official documents is accepted as proof of age during submission (JPG, PNG, or PDF format up to 5 MB):
+  </p>
+  <ul style="color: #334155; line-height: 1.8; font-size: 14px; padding-left: 20px;">
+    <li>Aadhaar Card (UIDAI) showing full Date of Birth or Year of Birth.</li>
+    <li>Electoral Photo Identity Card (Voter ID / EPIC) issued by the Election Commission of India.</li>
+    <li>School Leaving Certificate or High School Examination Board Certificate.</li>
+    <li>Official Age & Identity Certificate issued by the recognized Village Head (Gaonburah / Gaon Panchayat President).</li>
+  </ul>
+
+  <h3 style="color: var(--gov-navy); font-size: 18px; margin: 28px 0 12px;">4. Fair-Use & Shared Phone Policy</h3>
+  <p style="font-size: 13.5px; color: #475569; line-height: 1.7;">
+    We recognize that many elderly citizens do not own personal smartphones and rely on their children, grandchildren, 
+    or village Common Service Center (CSC) kiosk operators. The portal permits phone sharing for OTP verification; 
+    however, <strong>each 10-digit mobile number may hold at most one active application (Pending, Approved, or Deemed Approved) at a time</strong>. 
+    If an applicant needs to rectify an error, a pending application may be withdrawn from the status portal to allow immediate re-submission.
+  </p>
+
+  <div style="margin-top: 32px; padding: 20px; background: #eff6ff; border-radius: 8px; border: 1px solid #bfdbfe; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+    <div>
+      <h4 style="margin: 0 0 4px; color: var(--gov-navy); font-size: 16px;">Ready to Submit Your Application?</h4>
+      <p style="margin: 0; font-size: 13px; color: #1e3a8a;">Complete your registration in under 5 minutes with our guided form or citizen AI assistant.</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <a href="/apply" class="gov-btn gov-btn-saffron">Apply for Pension &rarr;</a>
+      <a href="/eval-dashboard" class="gov-btn gov-btn-outline">View Evaluation Dashboard</a>
+    </div>
+  </div>
+</div>
 {% endblock %}

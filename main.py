@@ -63,8 +63,14 @@ template_env = Environment(loader=FileSystemLoader(os.path.join(APP_DIR, "templa
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Startup initialization: populate initial evaluation results against seeded database."""
+    """Startup initialization: bootstrap database if needed & pre-seed evaluations."""
     logger.info("Initializing Sewa Setu Agentic Platform...")
+    try:
+        from bootstrap import ensure_database_initialized
+        ensure_database_initialized()
+    except Exception as e:
+        logger.warning("Database bootstrap warning: %s", e)
+
     try:
         # Pre-seed initial eval run so dashboard is populated immediately on startup
         logger.info("Running baseline persona evaluation suite...")
@@ -129,6 +135,88 @@ async def get_eval_results():
     if not EVAL_RUN_CACHE["results"]:
         await run_all_evaluations()
     return EVAL_RUN_CACHE
+
+
+# ---------------------------------------------------------------------------
+# Built-in SMS Gateway Endpoints (PurvSMS Simulation)
+# ---------------------------------------------------------------------------
+
+@app.post("/api/send")
+async def simulated_sms_send(request: Request):
+    """Simulated telecom SMS gateway endpoint for single-process deployments."""
+    try:
+        data = await request.json()
+    except Exception:
+        data = {}
+    to = data.get("to", "")
+    text = data.get("text", "")
+    if not to or not text:
+        return JSONResponse(status_code=400, content={"status": "error", "reason": "to and text required"})
+    
+    from sms_hub import record_sms
+    msg = record_sms(to, text)
+    logger.info("PurvSMS In-Process Dispatch -> To: %s | Text: %s", to, text)
+    return {"status": "queued", "id": msg["id"]}
+
+
+@app.get("/api/messages")
+async def simulated_sms_messages(to: str = ""):
+    """Simulated telecom SMS inbox inspection endpoint."""
+    from sms_hub import get_messages
+    return {"messages": get_messages(to)}
+
+
+@app.get("/sms-console", response_class=HTMLResponse)
+async def sms_console():
+    """Live web console for reviewing dispatched OTPs and applicant notifications."""
+    import time
+    from sms_hub import SMS_STORE
+    now = time.time()
+    rows = ""
+    for m in reversed(SMS_STORE[-100:]):
+        sent_hhmm = time.strftime("%H:%M:%S", time.localtime(m["sent_at"]))
+        is_deliv = now >= m["delivery_at"]
+        st_badge = '<span style="color:#15803d;font-weight:700;">Delivered</span>' if is_deliv else '<span style="color:#b45309;font-weight:700;">In Transit</span>'
+        txt = m["text"] if is_deliv else '<i>(carrier latency...)</i>'
+        rows += f"<tr><td>{m['id']}</td><td><code>{m['to']}</code></td><td>{txt}</td><td>{sent_hhmm}</td><td>{st_badge}</td></tr>"
+
+    html = f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>PurvSMS Telecom Gateway Console</title>
+  <meta http-equiv="refresh" content="5">
+  <style>
+    body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 24px; background: #f8fafc; color: #1e293b; }}
+    .header {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }}
+    h2 {{ margin: 0; color: #0f385c; }}
+    .badge {{ background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }}
+    table {{ width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }}
+    th, td {{ padding: 12px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 13.5px; }}
+    th {{ background: #f1f5f9; font-weight: 600; color: #475569; }}
+    a {{ color: #2563eb; text-decoration: none; }}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h2>PurvSMS Telecom Gateway Console (Built-in Simulation)</h2>
+      <p style="margin: 4px 0 0; color: #64748b; font-size: 13px;">Live telecom carrier feed for Sewa Setu pension OTPs & notifications &middot; Auto-refreshes every 5s</p>
+    </div>
+    <div>
+      <span class="badge">&bull; Operational</span>
+      <a href="/" style="margin-left: 12px; font-size: 13px;">&larr; Back to Portal</a>
+    </div>
+  </div>
+  <table>
+    <thead><tr><th>ID</th><th>Recipient Mobile</th><th>SMS Message Body</th><th>Sent Time (IST)</th><th>Status</th></tr></thead>
+    <tbody>
+      {rows or '<tr><td colspan="5" style="text-align:center;padding:32px;color:#94a3b8;">No SMS messages dispatched yet. Trigger an OTP on /apply to test.</td></tr>'}
+    </tbody>
+  </table>
+</body>
+</html>"""
+    return HTMLResponse(content=html)
 
 
 # ---------------------------------------------------------------------------

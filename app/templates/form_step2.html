@@ -1,17 +1,44 @@
 {% extends "base.html" %}
+{% block title %}Address Details — Step 3: Application Form | Sewa Setu{% endblock %}
+
 {% block content %}
-<div class="steps"><b>Step 3 of 6:</b> Address Details</div>
-<h2>Address Details</h2>
-<form method="post">
-  <label>Village / Town</label>
-  <input type="text" name="village" value="{{ data.get('village','') }}">
-  <label>Block</label>
-  <select name="block">
-    <option value="">--Select--</option>
-    {% for b in blocks %}
-    <option {% if data.get('block')==b %}selected{% endif %}>{{ b }}</option>
-    {% endfor %}
-  </select>
-  <p><button class="btn" type="submit">Save &amp; Continue</button></p>
-</form>
+<div class="gov-card" style="max-width: 680px; margin: 20px auto;">
+  <div style="font-size: 13px; color: var(--gov-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">
+    Step 3 of 5 &middot; Residential Address
+  </div>
+  <div style="height: 6px; background: #e2e8f0; border-radius: 3px; margin-bottom: 24px; position: relative;">
+    <div style="width: 60%; height: 100%; background: var(--gov-saffron); border-radius: 3px;"></div>
+  </div>
+
+  <h2 style="margin: 0 0 8px; color: var(--gov-navy); font-size: 22px;">Residential Address Details</h2>
+  <p style="font-size: 13.5px; color: #475569; margin: 0 0 20px;">
+    Enter the village and administrative block where the senior citizen permanently resides.
+  </p>
+
+  <form method="post">
+    <div>
+      <label for="village">Village / Ward / Gaon Panchayat <span style="color:#dc2626;">*</span></label>
+      <input type="text" id="village" name="village" value="{{ data.get('village','') }}" placeholder="e.g. Lakhipur" required autofocus>
+      <div class="hint-text">Enter village name as recognized by local Gaon Panchayat.</div>
+    </div>
+
+    <div style="margin-top: 14px;">
+      <label for="block">Administrative Block <span style="color:#dc2626;">*</span></label>
+      <select id="block" name="block" required>
+        <option value="">-- Select Approved Administrative Block --</option>
+        {% for b in blocks %}
+        <option value="{{ b }}" {% if data.get('block')==b %}selected{% endif %}>{{ b }}</option>
+        {% endfor %}
+      </select>
+      <div class="hint-text">Your application will be routed to the Block Development Officer (BDO) of this block.</div>
+    </div>
+
+    <div style="margin-top: 28px; display: flex; gap: 12px;">
+      <button class="gov-btn gov-btn-saffron" type="submit" style="padding: 11px 28px;">
+        Save &amp; Continue to Bank Details &rarr;
+      </button>
+      <a href="/form/1" class="gov-btn gov-btn-outline">&larr; Back</a>
+    </div>
+  </form>
+</div>
 {% endblock %}
