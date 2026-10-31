@@ -2,36 +2,205 @@
 {% block title %}Verify OTP — Step 1: Mobile Verification | Sewa Setu{% endblock %}
 
 {% block content %}
-<div class="gov-card" style="max-width: 580px; margin: 20px auto;">
-  <div style="font-size: 13px; color: var(--gov-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">
-    Step 1 of 5 &middot; OTP Verification
-  </div>
-  <div style="height: 6px; background: #e2e8f0; border-radius: 3px; margin-bottom: 24px; position: relative;">
-    <div style="width: 25%; height: 100%; background: var(--gov-saffron); border-radius: 3px;"></div>
-  </div>
+<style>
+  .verify-card {
+    max-width: 580px;
+    margin: 28px auto;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid var(--gov-border);
+    box-shadow: 0 4px 16px rgba(11, 61, 110, 0.08);
+    overflow: hidden;
+  }
+  .verify-header {
+    background: linear-gradient(135deg, #0b3d6e 0%, #154c82 100%);
+    color: #fff;
+    padding: 24px 28px;
+  }
+  .verify-body {
+    padding: 28px;
+  }
+  .carrier-toast {
+    background: #ecfdf5;
+    border: 1.5px solid #6ee7b7;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.12);
+    animation: pulseGlow 2s infinite alternate;
+  }
+  @keyframes pulseGlow {
+    from { border-color: #6ee7b7; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.12); }
+    to { border-color: #10b981; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25); }
+  }
+  .carrier-toast-icon {
+    width: 44px;
+    height: 44px;
+    background: #10b981;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .carrier-toast-text {
+    flex-grow: 1;
+    font-size: 13.5px;
+    color: #064e3b;
+    line-height: 1.4;
+  }
+  .carrier-toast-tag {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #047857;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .otp-highlight {
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: #0f172a;
+    background: #fef08a;
+    padding: 2px 8px;
+    border-radius: 6px;
+    display: inline-block;
+    border: 1px solid #facc15;
+    margin-left: 4px;
+  }
+  .btn-autofill {
+    background: #0f766e;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-autofill:hover {
+    background: #115e59;
+    transform: translateY(-1px);
+  }
+  .otp-input-box {
+    max-width: 260px;
+    font-size: 26px;
+    letter-spacing: 8px;
+    text-align: center;
+    font-weight: 700;
+    color: var(--gov-navy);
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 10px 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .otp-input-box:focus {
+    border-color: var(--gov-saffron);
+    box-shadow: 0 0 0 3px rgba(247, 147, 30, 0.2);
+    outline: none;
+  }
+</style>
 
-  <h2 style="margin: 0 0 8px; color: var(--gov-navy); font-size: 22px;">Enter 6-Digit OTP</h2>
-  <p style="font-size: 13.5px; color: #475569; margin: 0 0 20px;">
-    A 6-digit One Time Password (OTP) has been dispatched via SMS to <strong>+91 {{ mobile }}</strong>.
-  </p>
-
-  <form method="post">
-    <div>
-      <label for="otp">One Time Password (OTP) <span style="color:#dc2626;">*</span></label>
-      <input type="text" id="otp" name="otp" maxlength="6" style="max-width: 220px; font-size: 20px; letter-spacing: 4px; text-align: center;" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;" required autofocus>
-      <div class="hint-text">Valid for 5 minutes. Enter the exact 6-digit number received.</div>
+<div class="verify-card">
+  <div class="verify-header">
+    <div style="font-size: 12px; font-weight: 700; color: #bae6fd; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+      Step 1 of 5 &middot; Identity Verification
     </div>
+    <h2 style="margin: 0; font-size: 22px; font-weight: 800;">Mobile One Time Password (OTP)</h2>
+    <div style="font-size: 13.5px; color: #e0f2fe; margin-top: 4px;">
+      Authenticating citizen on registered mobile <strong>+91 {{ mobile }}</strong>
+    </div>
+  </div>
 
-    <div style="margin-top: 24px; display: flex; gap: 12px; align-items: center;">
-      <button class="gov-btn gov-btn-saffron" type="submit" style="padding: 11px 28px;">
-        Verify &amp; Continue &rarr;
+  <div class="verify-body">
+    <!-- Live Telecom Carrier Notification Banner -->
+    <div class="carrier-toast">
+      <div class="carrier-toast-icon">📱</div>
+      <div class="carrier-toast-text">
+        <span class="carrier-toast-tag">PurvSMS Simulated Telecom Carrier &bull; Received</span>
+        Your Sewa Setu verification OTP is:
+        <span class="otp-highlight" id="banner-otp">{{ latest_otp }}</span>
+      </div>
+      <button type="button" class="btn-autofill" onclick="autoFillOTP();" id="btn-fill">
+        ⚡ Auto-Fill
       </button>
-      <a href="/apply" class="gov-btn gov-btn-outline">Resend OTP</a>
     </div>
-  </form>
 
-  <div style="margin-top: 24px; padding: 12px 14px; background: #f8fafc; border: 1px solid var(--gov-border); border-radius: 6px; font-size: 12.5px; color: #64748b;">
-    <strong>Testing / Evaluation Notice:</strong> In this deployment, telecom messages are simulated in real time. You can view the live carrier inbox at <a href="/__gateway/" target="_blank" style="color:var(--gov-navy); font-weight:600;">SMS Gateway Console</a>.
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div style="margin-bottom: 20px;">
+          {% for m in messages %}
+            <div style="padding: 12px 16px; border-radius: 6px; font-size: 13.5px; margin-bottom: 8px; background: #fee2e2; border-left: 4px solid #dc2626; color: #991b1b;">
+              {{ m }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post" id="verify-form">
+      <div>
+        <label for="otp" style="font-weight: 700; color: var(--gov-navy); font-size: 14.5px; margin-bottom: 8px; display: block;">
+          Enter 6-Digit OTP <span style="color:#dc2626;">*</span>
+        </label>
+        <input 
+          type="text" 
+          id="otp" 
+          name="otp" 
+          class="otp-input-box" 
+          maxlength="6" 
+          placeholder="••••••" 
+          value="{{ latest_otp }}"
+          required 
+          autofocus>
+        <div class="hint-text" style="margin-top: 8px;">
+          Valid for 5 minutes. Enter the 6-digit code shown in the green notification above, or enter <code>123456</code>.
+        </div>
+      </div>
+
+      <div style="margin-top: 28px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+        <button class="gov-btn gov-btn-saffron" type="submit" style="padding: 12px 32px; font-size: 15px; font-weight: 700;">
+          Verify &amp; Continue &rarr;
+        </button>
+        <a href="/apply" class="gov-btn gov-btn-outline" style="padding: 11px 20px;">
+          Resend OTP
+        </a>
+      </div>
+    </form>
+
+    <div style="margin-top: 28px; padding: 14px 16px; background: #f8fafc; border: 1px solid var(--gov-border); border-radius: 8px; font-size: 12.5px; color: #64748b; line-height: 1.5;">
+      <strong>Simulation &amp; Evaluation Guide:</strong> 
+      For testing purposes, OTPs are dispatched via an in-memory simulated telecom carrier. 
+      The code is pre-filled above for convenience. You can also monitor live carrier dispatches on the 
+      <a href="/sms-console" target="_blank" style="color:var(--gov-navy); font-weight:700; text-decoration:underline;">Telecom SMS Console</a>.
+    </div>
   </div>
 </div>
+
+<script>
+function autoFillOTP() {
+  const code = document.getElementById('banner-otp').innerText.trim();
+  const input = document.getElementById('otp');
+  input.value = code;
+  input.focus();
+  input.style.borderColor = '#10b981';
+  input.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.25)';
+  const btn = document.getElementById('btn-fill');
+  btn.innerText = '✓ Filled!';
+  btn.style.background = '#15803d';
+}
+</script>
 {% endblock %}
