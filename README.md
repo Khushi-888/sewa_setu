@@ -15,14 +15,13 @@
 
 | Resource | Public URL | Description |
 |:---|:---|:---|
-| **Deploy on Render (1-Click)** | [**Deploy to Render**](https://render.com/deploy?repo=https://github.com/Khushi-888/sewa_setu) | 1-click automated blueprint setup (Web + Managed PostgreSQL) |
-| **Render Blueprint Spec** | [`render.yaml`](./render.yaml) | Infrastructure-as-code specification for Render |
-| **Live Tunnel / Web Portal** | [**https://faster-dreadful-conductor.ngrok-free.dev/**](https://faster-dreadful-conductor.ngrok-free.dev/) | Publicly accessible portal & interactive AI widget |
-| **Evaluation Dashboard** | [**/eval-dashboard**](https://faster-dreadful-conductor.ngrok-free.dev/eval-dashboard) | Live transcripts, persona outcomes, and PostgreSQL assertions |
-| **Department Officer Portal** | [**/admin**](https://faster-dreadful-conductor.ngrok-free.dev/admin) | Officer queue dashboard (`admin` / `admin123`) |
-| **Simulated SMS Console** | [**/sms-console**](https://faster-dreadful-conductor.ngrok-free.dev/sms-console) | Carrier OTP & SMS delivery inspection hub |
-| **Citizen MCP Endpoint** | `https://faster-dreadful-conductor.ngrok-free.dev/mcp/citizen` | Streamable HTTP / SSE citizen interface |
-| **Officer MCP Endpoint** | `https://faster-dreadful-conductor.ngrok-free.dev/mcp/officer` | Streamable HTTP / SSE officer interface |
+| **Live Render Deployment** | [**https://sewasetu-assistant.onrender.com/**](https://sewasetu-assistant.onrender.com/) | Live online platform on Render (Blueprint ID: `exs-dbj0qevb9u1s73cntd1g`) |
+| **Interactive Eval Dashboard** | [**https://sewasetu-assistant.onrender.com/eval-dashboard**](https://sewasetu-assistant.onrender.com/eval-dashboard) | Live transcripts, persona outcomes, and PostgreSQL assertions |
+| **Department Officer Portal** | [**https://sewasetu-assistant.onrender.com/admin**](https://sewasetu-assistant.onrender.com/admin) | Officer queue dashboard (`admin` / `admin123`) |
+| **Simulated SMS Console** | [**https://sewasetu-assistant.onrender.com/sms-console**](https://sewasetu-assistant.onrender.com/sms-console) | Carrier OTP & SMS delivery inspection hub |
+| **Citizen MCP Endpoint** | `https://sewasetu-assistant.onrender.com/mcp/citizen` | Streamable HTTP / SSE citizen interface |
+| **Officer MCP Endpoint** | `https://sewasetu-assistant.onrender.com/mcp/officer` | Streamable HTTP / SSE officer interface |
+| **Deploy to Render Blueprint** | [**Deploy to Render**](https://render.com/deploy?repo=https://github.com/Khushi-888/sewa_setu) | 1-click automated blueprint setup (Blueprint ID: `exs-dbj0qevb9u1s73cntd1g`) |
 
 ---
 
