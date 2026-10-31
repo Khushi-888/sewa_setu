@@ -102,6 +102,10 @@ def public_jwks():
     return {"keys": [jwk]}
 
 
+def get_issuer():
+    return os.environ.get("PUBLIC_BASE_URL", ISSUER).rstrip("/")
+
+
 def mint_access_token(subject, role, scope, audience, client_id, ttl=None, kind="access",
                       session_ends=None):
     kid, priv = signing_key()
@@ -112,7 +116,7 @@ def mint_access_token(subject, role, scope, audience, client_id, ttl=None, kind=
     if session_ends:
         exp = min(exp, int(session_ends.timestamp()))
     claims = {
-        "iss": ISSUER, "sub": subject, "aud": audience, "scope": scope, "role": role,
+        "iss": get_issuer(), "sub": subject, "aud": audience, "scope": scope, "role": role,
         "client_id": client_id, "iat": now, "exp": exp, "jti": secrets.token_hex(12),
         "kind": kind,
     }
@@ -127,7 +131,7 @@ def verify_token(token, audience):
     kid, priv = signing_key()
     try:
         return jwt.decode(token, priv.public_key(), algorithms=["RS256"],
-                          audience=audience, issuer=ISSUER)
+                          audience=audience, issuer=get_issuer())
     except jwt.PyJWTError:
         return None
 
@@ -138,13 +142,14 @@ def verify_token(token, audience):
 
 @oauth.get("/.well-known/oauth-authorization-server")
 def as_metadata():
+    iss = get_issuer()
     return jsonify({
-        "issuer": ISSUER,
-        "authorization_endpoint": ISSUER + "/oauth/authorize",
-        "token_endpoint": ISSUER + "/oauth/token",
-        "registration_endpoint": ISSUER + "/oauth/register",
-        "jwks_uri": ISSUER + "/.well-known/jwks.json",
-        "revocation_endpoint": ISSUER + "/oauth/revoke",
+        "issuer": iss,
+        "authorization_endpoint": iss + "/oauth/authorize",
+        "token_endpoint": iss + "/oauth/token",
+        "registration_endpoint": iss + "/oauth/register",
+        "jwks_uri": iss + "/.well-known/jwks.json",
+        "revocation_endpoint": iss + "/oauth/revoke",
         "scopes_supported": list(SCOPES),
         "response_types_supported": ["code"],
         "response_modes_supported": ["query"],
@@ -153,7 +158,7 @@ def as_metadata():
         "token_endpoint_auth_methods_supported": ["none", "client_secret_post"],
         "authorization_response_iss_parameter_supported": True,
         "client_id_metadata_document_supported": True,
-        "service_documentation": ISSUER + "/about",
+        "service_documentation": iss + "/about",
     })
 
 

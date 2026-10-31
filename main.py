@@ -28,6 +28,18 @@ os.environ.setdefault("DB_HOST", "db" if is_docker else "localhost")
 os.environ.setdefault("SMS_GATEWAY_URL", "http://smsgw:8025" if is_docker else "http://localhost:8025")
 os.environ.setdefault("UPLOAD_DIR", "/var/sewasetu/uploads" if is_docker else os.path.join(BASE_DIR, "uploads"))
 
+# Auto-detect public tunnel URL if not explicitly set
+if not os.environ.get("PUBLIC_BASE_URL"):
+    try:
+        import urllib.request
+        with urllib.request.urlopen("http://127.0.0.1:4040/api/tunnels", timeout=1) as resp:
+            data = json.loads(resp.read().decode())
+            if data.get("tunnels"):
+                os.environ["PUBLIC_BASE_URL"] = data["tunnels"][0]["public_url"]
+                logger.info("Detected public tunnel base URL: %s", os.environ["PUBLIC_BASE_URL"])
+    except Exception:
+        pass
+
 import app as portal
 import oauth
 from a2wsgi import WSGIMiddleware
