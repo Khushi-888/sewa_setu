@@ -41,6 +41,9 @@ class RoleEnforcementMiddleware(BaseHTTPMiddleware):
 
         # If targeting officer MCP
         if path.startswith("/mcp/officer"):
+            # Allow browser inspection on GET /mcp/officer
+            if request.method == "GET" and path in ("/mcp/officer", "/mcp/officer/"):
+                return await call_next(request)
             # Check for evaluation harness bypass header or query param
             if request.headers.get("X-Eval-Session") or request.query_params.get("eval") == "true":
                 return await call_next(request)

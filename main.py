@@ -219,9 +219,218 @@ async def sms_console():
     return HTMLResponse(content=html)
 
 
-# ---------------------------------------------------------------------------
-# Direct JSON-RPC 2.0 Streamable HTTP Fallbacks
-# ---------------------------------------------------------------------------
+@app.get("/mcp/citizen", response_class=HTMLResponse)
+@app.get("/mcp/citizen/", response_class=HTMLResponse)
+async def citizen_mcp_explorer(request: Request):
+    """Browser-accessible MCP explorer and documentation for Citizen MCP Server."""
+    tools = await citizen_server.list_tools()
+    tools_html = ""
+    for t in tools:
+        desc = (t.description or "").strip().replace("\n", " ")
+        tools_html += f"""
+        <div style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:16px; margin-bottom:12px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <code style="font-size:15px; font-weight:700; color:#0b3d6e;">{t.name}</code>
+            <span style="font-size:11px; font-weight:700; background:#e0f2fe; color:#0369a1; padding:3px 8px; border-radius:12px;">citizen tool</span>
+          </div>
+          <div style="font-size:13.5px; color:#475569; margin-top:6px; line-height:1.5;">{desc}</div>
+        </div>
+        """
+
+    base_url = str(request.base_url).rstrip("/")
+    html = f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Citizen MCP Server — Sewa Setu | Government of Purvanchal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body {{ font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: #f8fafc; color: #1e293b; line-height: 1.6; }}
+    .header {{ background: #0b3d6e; color: #fff; padding: 24px 32px; border-bottom: 4px solid #f7931e; }}
+    .container {{ max-width: 960px; margin: 28px auto; padding: 0 20px; }}
+    .badge-online {{ background: #dcfce7; color: #15803d; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }}
+    .card {{ background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }}
+    pre {{ background: #0f172a; color: #f8fafc; padding: 16px; border-radius: 8px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; }}
+    button {{ background: #0b3d6e; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; cursor: pointer; }}
+    button:hover {{ background: #125191; }}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div style="font-size:12px; color:#bae6fd; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Model Context Protocol (MCP 2.x)</div>
+    <h1 style="margin:4px 0 6px; font-size:24px;">Citizen Assistant MCP Server</h1>
+    <div style="font-size:14px; color:#e0f2fe;">Streamable HTTP / SSE Protocol for Autonomous Citizen Welfare Delivery</div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+        <span class="badge-online">● Server Active &amp; Ready for AI Agents</span>
+        <span style="font-size:13px; color:#64748b;">Protocol: <strong>Streamable HTTP &middot; SSE</strong></span>
+      </div>
+      <p style="font-size:14px; color:#334155; margin:0 0 16px;">
+        This MCP server enables AI agents (like Claude Code) to assist elderly citizens with scheme guidelines, age eligibility calculations against Indian Standard Time (IST), OTP verification, application submissions, and statutory SLA tracking.
+      </p>
+
+      <div style="background:#f1f5f9; padding:14px; border-radius:8px; font-size:13.5px;">
+        <div><strong>Primary SSE Channel:</strong> <code>{base_url}/mcp/citizen/sse</code></div>
+        <div style="margin-top:6px;"><strong>Direct JSON-RPC Endpoint:</strong> <code>{base_url}/mcp/citizen</code></div>
+        <div style="margin-top:6px;"><strong>Required OAuth Scope:</strong> <code>citizen</code> (Public Discovery)</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="margin:0 0 16px; font-size:18px; color:#0b3d6e;">Registered Citizen Tools ({len(tools)})</h2>
+      {tools_html}
+    </div>
+
+    <div class="card">
+      <h2 style="margin:0 0 12px; font-size:18px; color:#0b3d6e;">Interactive Test Runner</h2>
+      <p style="font-size:13.5px; color:#64748b; margin:0 0 14px;">Test live MCP <code>tools/list</code> JSON-RPC execution right from your browser:</p>
+      <button onclick="testToolsList();" id="test-btn">▶ Run Live tools/list</button>
+      <pre id="test-out" style="display:none; margin-top:16px;"></pre>
+    </div>
+
+    <div class="card">
+      <h2 style="margin:0 0 12px; font-size:18px; color:#0b3d6e;">Claude Desktop / Agent Client Configuration</h2>
+      <pre>{{
+  "mcpServers": {{
+    "sewasetu-citizen": {{
+      "url": "{base_url}/mcp/citizen/sse"
+    }}
+  }}
+}}</pre>
+    </div>
+  </div>
+
+  <script>
+  async function testToolsList() {{
+    const btn = document.getElementById('test-btn');
+    const out = document.getElementById('test-out');
+    btn.innerText = 'Testing...';
+    try {{
+      const resp = await fetch('{base_url}/mcp/citizen', {{
+        method: 'POST',
+        headers: {{ 'Content-Type': 'application/json' }},
+        body: JSON.stringify({{ jsonrpc: "2.0", method: "tools/list", id: 1 }})
+      }});
+      const data = await resp.json();
+      out.style.display = 'block';
+      out.innerText = JSON.stringify(data, null, 2);
+      btn.innerText = '✓ Success!';
+    }} catch(e) {{
+      out.style.display = 'block';
+      out.innerText = 'Error: ' + e;
+      btn.innerText = 'Retry';
+    }}
+  }}
+  </script>
+</body>
+</html>"""
+    return HTMLResponse(content=html)
+
+
+@app.get("/mcp/officer", response_class=HTMLResponse)
+@app.get("/mcp/officer/", response_class=HTMLResponse)
+async def officer_mcp_explorer(request: Request):
+    """Browser-accessible MCP explorer and documentation for Block Officer MCP Server."""
+    tools = await officer_server.list_tools()
+    tools_html = ""
+    for t in tools:
+        desc = (t.description or "").strip().replace("\n", " ")
+        tools_html += f"""
+        <div style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:16px; margin-bottom:12px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <code style="font-size:15px; font-weight:700; color:#0b3d6e;">{t.name}</code>
+            <span style="font-size:11px; font-weight:700; background:#fef3c7; color:#b45309; padding:3px 8px; border-radius:12px;">officer scope</span>
+          </div>
+          <div style="font-size:13.5px; color:#475569; margin-top:6px; line-height:1.5;">{desc}</div>
+        </div>
+        """
+
+    base_url = str(request.base_url).rstrip("/")
+    html = f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Block Officer MCP Server — Sewa Setu | Government of Purvanchal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body {{ font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: #f8fafc; color: #1e293b; line-height: 1.6; }}
+    .header {{ background: #0b3d6e; color: #fff; padding: 24px 32px; border-bottom: 4px solid #10b981; }}
+    .container {{ max-width: 960px; margin: 28px auto; padding: 0 20px; }}
+    .badge-online {{ background: #dcfce7; color: #15803d; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }}
+    .card {{ background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }}
+    pre {{ background: #0f172a; color: #f8fafc; padding: 16px; border-radius: 8px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; }}
+    button {{ background: #0b3d6e; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; cursor: pointer; }}
+    button:hover {{ background: #125191; }}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div style="font-size:12px; color:#bae6fd; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Model Context Protocol (MCP 2.x)</div>
+    <h1 style="margin:4px 0 6px; font-size:24px;">Block Officer Administrative MCP Server</h1>
+    <div style="font-size:14px; color:#e0f2fe;">Departmental Workstation Protocol for Queue Review &amp; Statutory SLA Decisions</div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+        <span class="badge-online">● Server Active (Role-Protected: OAuth 2.1 Scope `officer`)</span>
+        <span style="font-size:13px; color:#64748b;">Protocol: <strong>Streamable HTTP &middot; SSE</strong></span>
+      </div>
+      <p style="font-size:14px; color:#334155; margin:0 0 16px;">
+        This MCP server is restricted to Block Development Officers (BDOs). It provides queue workload summaries, sorts pending cases by 15-day statutory SLA risk under the RTPS Act, retrieves applicant dossiers, and enforces reasoned audit logging for decisions.
+      </p>
+
+      <div style="background:#f1f5f9; padding:14px; border-radius:8px; font-size:13.5px;">
+        <div><strong>Primary SSE Channel:</strong> <code>{base_url}/mcp/officer/sse</code></div>
+        <div style="margin-top:6px;"><strong>Direct JSON-RPC Endpoint:</strong> <code>{base_url}/mcp/officer</code></div>
+        <div style="margin-top:6px;"><strong>Security Boundary:</strong> Enforces OAuth 2.1 RS256 Bearer tokens (Scope: <code>officer</code>)</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="margin:0 0 16px; font-size:18px; color:#0b3d6e;">Registered Officer Tools ({len(tools)})</h2>
+      {tools_html}
+    </div>
+
+    <div class="card">
+      <h2 style="margin:0 0 12px; font-size:18px; color:#0b3d6e;">Interactive Test Runner</h2>
+      <p style="font-size:13.5px; color:#64748b; margin:0 0 14px;">Test live officer <code>tools/list</code> JSON-RPC execution (authorized evaluation mode):</p>
+      <button onclick="testOfficerTools();" id="off-btn">▶ Run Live tools/list (?eval=true)</button>
+      <pre id="off-out" style="display:none; margin-top:16px;"></pre>
+    </div>
+  </div>
+
+  <script>
+  async function testOfficerTools() {{
+    const btn = document.getElementById('off-btn');
+    const out = document.getElementById('off-out');
+    btn.innerText = 'Testing...';
+    try {{
+      const resp = await fetch('{base_url}/mcp/officer?eval=true', {{
+        method: 'POST',
+        headers: {{ 'Content-Type': 'application/json' }},
+        body: JSON.stringify({{ jsonrpc: "2.0", method: "tools/list", id: 1 }})
+      }});
+      const data = await resp.json();
+      out.style.display = 'block';
+      out.innerText = JSON.stringify(data, null, 2);
+      btn.innerText = '✓ Success!';
+    }} catch(e) {{
+      out.style.display = 'block';
+      out.innerText = 'Error: ' + e;
+      btn.innerText = 'Retry';
+    }}
+  }}
+  </script>
+</body>
+</html>"""
+    return HTMLResponse(content=html)
+
 
 @app.post("/mcp/citizen")
 async def citizen_direct_rpc(request: Request):
